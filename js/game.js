@@ -5,8 +5,8 @@ var game = new Phaser.Game(600, 800
 
 //  Dimensions
 var previewSize = 6;
-var spriteWidth = 16;
-var spriteHeight = 16;
+var spriteWidth = 15;
+var spriteHeight = 5;
 
 //  Drawing Area
 var canvas;
@@ -22,6 +22,10 @@ var SIZE_ONE_BLOCK = 20;
 
 
 function preload() {
+
+    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    //game.scale.setScreenSize();
+
     for (var i = 0; i < BLOCK_CNT; ++i) {
         game.load.image('one_' + blockName[i], 'assets/one_' + blockName[i] + '.png');
         game.load.image('whole_' + blockName[i], 'assets/whole_' + blockName[i] + '.png');
@@ -29,6 +33,10 @@ function preload() {
 }
 
 function create() {
+    // 센터로 정렬
+    this.game.scale.pageAlignHorizontally = true;
+    this.game.scale.pageAlignVeritcally = true;
+    this.game.scale.refresh();    
 
     //   So we can right-click to erase
     document.body.oncontextmenu = function () { return false; };
@@ -38,15 +46,19 @@ function create() {
 
     game.stage.backgroundColor = '#301020';
 
-
     createDrawingArea();
 
+    // 블럭 생성 (테스트용)
     var sumX = 40;
     var sumY = 100;
-    for (var i = 0; i < BLOCK_CNT; ++i) {
-        var block = createBlock(blockName[i]);
+    for (var i = 0; i < BLOCK_CNT*2; ++i) {
+        var block = createBlock(blockName[i % BLOCK_CNT]);
         block.x = 60 + sumX * (i % BLOCK_CNT);
-        block.y = 440 + sumY * (i % 2);
+        block.y = 240 + sumY * (i % 2);
+        if (i >= BLOCK_CNT) {
+            block.scale.x *= -1;
+            block.y += 200;
+        }
     }    
 }
 
@@ -56,6 +68,7 @@ function update() {
 
 function createBlock(blockType) {
     var block = game.add.sprite(0, 0, 'whole_' + blockType);
+
     // find anchor to rotate
     var w = block.width / SIZE_ONE_BLOCK;
     var h = block.height / SIZE_ONE_BLOCK;
@@ -78,8 +91,6 @@ function createBlock(blockType) {
     
     block.input.pixelPerfectOver = true;
     //block.input.useHandleCursor = true;
-
-    // click event
 
     return block;
 }
@@ -108,7 +119,9 @@ function onInputUp(block, pointer) {
     //console.log('onInputUp');
     if (dragMovement <= 2) {
         block.angle += 90;
+        //block.scale.x *= -1;
     }
+
 }
 
 
@@ -120,7 +133,7 @@ function createDrawingArea() {
     canvasBG = game.make.bitmapData(canvas.width + 2, canvas.height + 2);
 
     canvasBG.rect(0, 0, canvasBG.width, canvasBG.height, '#fff');
-    canvasBG.rect(1, 1, canvasBG.width - 2, canvasBG.height - 2, '#3f5c67');
+    canvasBG.rect(1, 1, canvasBG.width - 2, canvasBG.height - 2, '#000000');
 
     var x = 18;
     var y = 59;

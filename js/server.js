@@ -17,10 +17,10 @@ http.listen(port, function(){
 
 // 유저 접속 시 받는 패킷
 io.on('connection', function(socket){	
-	
+	console.log('connected');
 	// 유저 접속 종료 시 처리
 	socket.on('disconnect', function(){
-
+		console.log('disconnect');
 	});
 
 	
