@@ -1,10 +1,12 @@
 
-var game = new Phaser.Game(600, 800, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(600, 800
+    , Phaser.AUTO, 'Pentomino'
+    , { preload: preload, create: create, update: update });
 
 //  Dimensions
 var previewSize = 6;
-var spriteWidth = 20;
-var spriteHeight = 20;
+var spriteWidth = 16;
+var spriteHeight = 16;
 
 //  Drawing Area
 var canvas;
@@ -39,19 +41,13 @@ function create() {
 
     createDrawingArea();
 
-    var sumWidth = 0;
+    var sumX = 40;
+    var sumY = 100;
     for (var i = 0; i < BLOCK_CNT; ++i) {
         var block = createBlock(blockName[i]);
-        block.x += sumWidth;
-        sumWidth += block.width;
+        block.x = 60 + sumX * (i % BLOCK_CNT);
+        block.y = 440 + sumY * (i % 2);
     }    
-}
-
-function fixLocation(item) {
-
-    //item.x -= 8;
-    //item.y += 6;
-
 }
 
 function update() {
@@ -59,13 +55,60 @@ function update() {
 }
 
 function createBlock(blockType) {
-    var moveF = game.add.sprite(0, 0, 'whole_' + blockType);
-    moveF.inputEnabled = true;
-    moveF.input.enableDrag();
-    moveF.input.enableSnap(SIZE_ONE_BLOCK, SIZE_ONE_BLOCK, false, true);
-    moveF.events.onDragStop.add(fixLocation);
+    var block = game.add.sprite(0, 0, 'whole_' + blockType);
+    // find anchor to rotate
+    var w = block.width / SIZE_ONE_BLOCK;
+    var h = block.height / SIZE_ONE_BLOCK;
+    w = 0.5 + ((w % 2) * (1 / (w * 2)));
+    h = 0.5 + ((h % 2) * (1 / (h * 2)));
+    block.anchor.setTo(w, h);
+    // input 허용
+    block.inputEnabled = true;
+    // drag 허용
+    block.input.enableDrag();
+    // SIZE_ONE_BLOCK 사이즈 마다 딱딱 맞게 배치.
+    block.input.enableSnap(SIZE_ONE_BLOCK, SIZE_ONE_BLOCK, false, true);
 
-    return moveF;
+    // events
+    block.events.onDragStart.add(onDragStart, this);
+    block.events.onDragUpdate.add(onDragUpdate, this);
+    block.events.onDragStop.add(onDragStop, this);
+    block.events.onInputDown.add(onInputDown, this);
+    block.events.onInputUp.add(onInputUp, this);
+    
+    block.input.pixelPerfectOver = true;
+    //block.input.useHandleCursor = true;
+
+    // click event
+
+    return block;
+}
+
+var dragMovement;
+function onDragStart(block, pointer) {
+    //console.log('onDragStart');
+    dragMovement = 0;
+}
+
+function onDragUpdate(block, pointer) {
+    //console.log('onDragUpdate');
+    dragMovement += 1;
+}
+
+function onDragStop(block, pointer) {
+    //console.log('onDragStop');
+    dragMovement = 0;
+}
+
+function onInputDown(block, pointer) {
+    //console.log('onInputDown');
+}
+
+function onInputUp(block, pointer) {
+    //console.log('onInputUp');
+    if (dragMovement <= 2) {
+        block.angle += 90;
+    }
 }
 
 
