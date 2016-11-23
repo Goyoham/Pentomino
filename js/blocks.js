@@ -116,7 +116,7 @@ function InitBlockForms(){
     var flippedForm = makeFlippedForm(blockForm);
     var originForm = makeFlippedForm(flippedForm);
     blockForms = [[],[]];
-    for(var i = 1; i < 4; ++i){
+    for(var i = 0; i < 4; ++i){
         blockForms[0].push(originForm);
         blockForms[1].push(flippedForm);
         //console.log('origin ' + (i+1));
@@ -161,7 +161,7 @@ function createBlock(blockType, bFlip) {
     // allow input
     block.inputEnabled = true;
     // allow drag
-    block.input.enableDrag();
+    block.input.enableDrag(false, true);
     // SIZE_ONE_BLOCK
     //block.input.enableSnap(SIZE_ONE_BLOCK, SIZE_ONE_BLOCK, false, true);
 
@@ -185,7 +185,7 @@ function onDragStart(block, pointer) {
     dragMovement = 0;
 }
 
-function onDragUpdate(block, pointer) {
+function onDragUpdate(block, pointer) {    
     //console.log('onDragUpdate block X:' + block.x + ' Y:' + block.y);
     dragMovement += 1;
 
@@ -206,7 +206,7 @@ function onDragUpdate(block, pointer) {
             shadow.y = beforeY;
         }
         // log
-        var shadowPos = getBlockPos(shadow);
+        //var shadowPos = getBlockPos(shadow);
         //console.log('shadow:'+shadow.x + ' ' + shadow.y + ' ' + shadowPos.x + ' ' + shadowPos.y);
     }
 }
@@ -227,6 +227,13 @@ function onDragStop(block, pointer) {
 }
 
 function onInputDown(block, pointer) {
+    /*
+    if( blockList[lastBlockToTop].key !== block.key)
+    {
+        block.input.enabled = false;
+        return;
+    }
+    */
     //console.log('onInputDown : '+block.key);
     // shadow
     shadow = game.add.sprite(0, 0, block.key);
@@ -239,7 +246,22 @@ function onInputDown(block, pointer) {
 }
 
 function rotateBlock(block){
-    block.angle += 90; // rotate
+    //console.log('rotate');
+    if (shadow !== 0) {
+        beforeX = shadow.x;
+        beforeY = shadow.y;
+        shadow.x = GetPosShadow(block.x);
+        shadow.y = GetPosShadow(block.y);
+        shadow.angle += 90;
+        if (CheckOverlappedBlock(shadow, blockList)) {
+            shadow.x = beforeX;
+            shadow.y = beforeY;
+            shadow.angle -= 90;
+        }
+        else {
+            block.angle += 90; // rotate
+        }
+    }
 }
 
 function onInputUp(block, pointer) {

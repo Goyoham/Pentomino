@@ -2,7 +2,7 @@ var SCREEN_WIDTH = 540;
 var SCREEN_HEIGHT = 800;
 var game = new Phaser.Game(SCREEN_WIDTH, SCREEN_HEIGHT
     , Phaser.AUTO, 'Pentomino'
-    , { preload: preload, create: create, update: update });
+    , { preload: preload, create: create, update: update, render: render });
 
 //----------------- preload -----------------------------------------------------------------
 function preload() {
@@ -43,5 +43,28 @@ function create() {
 
 //----------------- update -----------------------------------------------------------------
 function update() {
+    mouseOveredBlockToTop();
+}
+
+var lastBlockToTop = -1;
+function mouseOveredBlockToTop(){
+    var len = blockList.length;
+    for(var i = 0; i < len; ++i){
+        if( lastBlockToTop === i )
+            continue;
+        if(blockList[i].input.pointerOver())
+        {
+            game.world.bringToTop(blockList[i]);
+            lastBlockToTop = i;
+            //console.log(i);
+        }
+    }
+}
+
+//----------------- render -----------------------------------------------------------------
+function render() {
+
+    //game.debug.spriteInputInfo(blockList[0], 32, 32);
+    //game.debug.geom(blockList[0].input._tempPoint);
 
 }

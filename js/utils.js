@@ -16,7 +16,7 @@ function getBlockFlip(block){
 }
 
 function getBlockRotation(block){
-    return block.angle % 90;
+    return ((block.angle + 360) / 90) % 4;
 }
 
 function getBlockState(block){
@@ -38,7 +38,6 @@ function getCenterOfAnchor(size) {
     return 0.5 + ((size % 2) * (1 / (size * 2)));
 }
 
-// 
 function getCenterPosOfBlock(block) {
     var lengthY = getBlockForm(block).length;
     var lengthX = getBlockForm(block)[0].length;
@@ -48,10 +47,29 @@ function getCenterPosOfBlock(block) {
     return centerPos;
 }
 
+function IsOddX(block){
+    return getBlockForm(block)[0].length % 2 === 1;
+}
+function IsOddY(block){
+    return getBlockForm(block).length % 2 === 1;
+}
+
 function getBlockPos(block) {
     var pos = {};
     pos.x = Math.round(block.x / SIZE_ONE_BLOCK);
     pos.y = Math.round(block.y / SIZE_ONE_BLOCK);
+    
+    if( getBlockRotation(block) == 1){
+        if( IsOddX(block) ) pos.x += 1;
+    }
+    else if( getBlockRotation(block) == 2){
+        if( IsOddX(block) ) pos.x += 1;
+        if( IsOddY(block) ) pos.y += 1;
+    }
+    else if( getBlockRotation(block) == 3){
+        if( IsOddY(block) ) pos.y += 1;
+    }
+    
     return pos;
 }
 
@@ -106,11 +124,13 @@ function IsSameBlock(blockA, blockB){
 function CheckOverlappedBlock(myBlock, blockList) {
     var len = blockList.length;
     var myBlockPosList = getBlockPosList(myBlock);
+
     // log
     /*
     var blockPos = getBlockPos(myBlock);
-    console.log('pos : ' +myBlock.x+' '+myBlock.y);
+    //console.log('pos : ' +myBlock.x+' '+myBlock.y);
     console.log('blockpos : ' +blockPos.x+' '+blockPos.y);
+    console.log('roation : ' + getBlockRotation(myBlock));    
     console.log('lengthX : '+getBlockForm(myBlock)[0].length);
      for(var keyY in myBlockPosList){
         for(var keyX in myBlockPosList[keyY] ){
