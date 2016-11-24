@@ -35,7 +35,9 @@ function create() {
     game.stage.backgroundColor = '#301020';
 
     // create play board
-    createDrawingArea();
+    createDrawingArea(12, 5, 20, 280);
+    createDrawingArea(12, 5, 280, 280);
+    //createDrawingArea(12, 5, 100, 300);
 
     // create blocks
     createAllBlocks();
