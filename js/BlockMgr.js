@@ -12,12 +12,14 @@ var blockMgr = new BlockMgr();
 
 // members ------------------------------------------------------------------------------------
 BlockMgr.prototype.shadowBlock = 0; // following block like a shadow
+BlockMgr.prototype.lastClickedBlock = 0;
 BlockMgr.prototype.dragMovement = 0;
 BlockMgr.prototype.blockList = [];
 
 // static members ------------------------------------------------------------------------------------
 BlockMgr.prototype.blockName = ['F', 'I', 'L', 'N', 'P', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-BlockMgr.prototype.BLOCK_CNT = 12;
+BlockMgr.prototype.BLOCK_CNT = 12; // kind
+BlockMgr.prototype.BLOCK_VOLUME = 5;
 BlockMgr.prototype.SIZE_ONE_BLOCK = 20;
 BlockMgr.prototype.blockForms;
 BlockMgr.prototype.blockForm = {
@@ -141,6 +143,10 @@ BlockMgr.prototype._getBlockFlip = function(block){
     return block.scale.x > 0 ? 0 : 1;
 }
 
+BlockMgr.prototype._setBlockFlip = function(block){
+    block.scale.x *= -1;
+}
+
 BlockMgr.prototype._getBlockRotation = function(block){
     return ((block.angle + 360) / 90) % 4;
 }
@@ -181,6 +187,16 @@ BlockMgr.prototype._IsSameBlock = function(blockA, blockB){
     return true;
 }
 
+BlockMgr.prototype._setAnchor = function(block){
+    var w = block.width / this.SIZE_ONE_BLOCK;
+    var h = block.height / this.SIZE_ONE_BLOCK;
+    w = this._getCenterOfAnchor(w);
+    if( this._getBlockFlip(block) === 1)
+        w = 1 - w;
+    h = this._getCenterOfAnchor(h);
+    block.anchor.setTo(w, h);
+}
+
 // functions members ------------------------------------------------------------------------------------
 BlockMgr.prototype.InitBlockForms = function(){
     var flippedForm = this._makeFlippedForm(this.blockForm);
@@ -197,17 +213,48 @@ BlockMgr.prototype.InitBlockForms = function(){
 }
 
 BlockMgr.prototype.createAllBlocks = function() {
-    var sumX = 40;
+    var sumX = 20;
     var sumY = 100;
     for (var i = 0; i < this.BLOCK_CNT * 2; ++i) {
         var block = this.createBlock(this.blockName[i % this.BLOCK_CNT], i >= this.BLOCK_CNT);
-        block.x = 60 + sumX * (i % this.BLOCK_CNT);
+        block.x = 80 + sumX * (i % this.BLOCK_CNT);
         block.y = 80 + sumY * (i % 2);
         if (i >= this.BLOCK_CNT) {            
             block.x -= 20;
-            block.y += 400;
+            block.y += 320;
         }
         this.blockList.push(block);
+    }
+}
+
+BlockMgr.prototype.createRandomBlocks = function(num){
+    if( num < 0 || num > this.BLOCK_CNT )
+        num = this.BLOCK_CNT;
+
+    var makeBlockIndex = [];
+    for(var i = 0; i < num;){
+        var ran = utils.randomRange(0, this.BLOCK_CNT-1);
+        if( utils.inArray(makeBlockIndex, ran) )
+            continue;
+        makeBlockIndex.push(ran);
+        ++i
+    }
+
+    for (var i = 0; i < num;) {
+        var index = makeBlockIndex[i];
+        var block = this.createBlock(this.blockName[index], false);
+        block.y = 400;
+        while(this.CheckOverlappedBlock(block, this.blockList)) {
+            if( block.x > SCREEN_WIDTH ){
+                block.x = 0;
+                block.y += blockMgr.SIZE_ONE_BLOCK;
+            }
+            else{
+                block.x += blockMgr.SIZE_ONE_BLOCK;
+            }
+        }
+        this.blockList.push(block);
+        ++i;
     }
 }
 
@@ -215,16 +262,10 @@ BlockMgr.prototype.createBlock = function(blockType, bFlip) {
     // real block
     var block = game.add.sprite(0, 0, 'whole_' + blockType);
     if( bFlip === true )
-        block.scale.x *= -1;
+        this._setBlockFlip(block);
 
     // find anchor to rotate
-    var w = block.width / this.SIZE_ONE_BLOCK;
-    var h = block.height / this.SIZE_ONE_BLOCK;
-    w = this._getCenterOfAnchor(w);
-    if( this._getBlockFlip(block) === 1)
-        w = 1 - w;
-    h = this._getCenterOfAnchor(h);
-    block.anchor.setTo(w, h);
+    this._setAnchor(block);
     // allow input
     block.inputEnabled = true;
     // allow drag
@@ -247,6 +288,15 @@ BlockMgr.prototype.createBlock = function(blockType, bFlip) {
     return block;
 }
 
+BlockMgr.prototype.eraseBlocks = function(){
+    var len = this.blockList.length;
+    for(var i = 0; i < len; ++i){
+        this.blockList[i].kill();
+    }
+    this.blockList = [];
+    this.lastClickedBlock = 0;
+    this.shadowBlock = 0;
+}
 
 BlockMgr.prototype.onDragStart = function(block, pointer) {
     //console.log('onDragStart');
@@ -282,17 +332,23 @@ BlockMgr.prototype.onDragUpdate = function(block, pointer) {
 BlockMgr.prototype.onDragStop = function(block, pointer) {
     //console.log('onDragStop');
     this.dragMovement = 0;
+
+    createGameMgr.fillGameBoardArray(this.blockList);
+    // log
+    /*
+    var myBlockPosList = this.getBlockPosList(block);
+    console.log('----');
+    for(var keyY in myBlockPosList){
+        for(var keyX in myBlockPosList[keyY] ){
+            console.log(keyY + ' ' + keyX);
+        }
+    }
+    */
 }
 
 BlockMgr.prototype.onInputDown = function(block, pointer) {
-    /*
-    if( this.blockList[this.lastBlockToTop].key !== block.key)
-    {
-        block.input.enabled = false;
-        return;
-    }
-    */
     //console.log('onInputDown : '+block.key);
+    this.lastClickedBlock = block;
     // shadow
     this.shadowBlock = game.add.sprite(0, 0, block.key);
     this.shadowBlock.alpha = 0.5;
@@ -424,17 +480,17 @@ BlockMgr.prototype.CheckOverlappedBlock = function(myBlock, blockList) {
     console.log('blockpos : ' +blockPos.x+' '+blockPos.y);
     console.log('roation : ' + this._getBlockRotation(myBlock));    
     console.log('lengthX : '+this.getBlockForm(myBlock)[0].length);
-     for(var keyY in myBlockPosList){
+    
+    for(var keyY in myBlockPosList){
         for(var keyX in myBlockPosList[keyY] ){
             console.log(keyY + ' ' + keyX);
         }
     }
     */
     // log
-
     // check over map
     for(var keyY in myBlockPosList){
-        if( keyY < 0 || keyY >= (SCREEN_HEIGHT/blockMgr.SIZE_ONE_BLOCK) )
+        if( keyY < 2 || keyY >= (SCREEN_HEIGHT/blockMgr.SIZE_ONE_BLOCK) )
             return true;
         for(var keyX in myBlockPosList[keyY] ){
             if( keyX < 0 || keyX >= (SCREEN_WIDTH/blockMgr.SIZE_ONE_BLOCK) )
@@ -452,4 +508,17 @@ BlockMgr.prototype.CheckOverlappedBlock = function(myBlock, blockList) {
     }
 
     return false;
+}
+
+BlockMgr.prototype.FlipLastClickedBlock = function(){
+    if( this.lastClickedBlock === 0 )
+        return;
+    if( typeof this.lastClickedBlock === 'undefined' )
+        return;
+    this._setBlockFlip(this.lastClickedBlock);
+    if (this.CheckOverlappedBlock(this.lastClickedBlock, this.blockList)) {
+        this._setBlockFlip(this.lastClickedBlock);
+        return;
+    }
+    this._setAnchor(this.lastClickedBlock);
 }

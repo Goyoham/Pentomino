@@ -1,5 +1,5 @@
-var SCREEN_WIDTH = 540;
-var SCREEN_HEIGHT = 800;
+var SCREEN_WIDTH = 400;
+var SCREEN_HEIGHT = 600;
 var game = new Phaser.Game(SCREEN_WIDTH, SCREEN_HEIGHT
     , Phaser.AUTO, 'Pentomino'
     , { preload: preload, create: create, update: update, render: render });
@@ -14,38 +14,37 @@ function preload() {
     for (var i = 0; i < blockMgr.BLOCK_CNT; ++i) {
         game.load.image('whole_' + blockMgr.blockName[i], 'assets/whole_' + blockMgr.blockName[i] + '.png');
     }
+
+    game.load.spritesheet('btn_random', 'assets/btn_random.png', 120, 39);
+    game.load.spritesheet('btn_flip', 'assets/btn_flip.png', 200, 39);
+    game.load.bitmapFont('font_desyrel', 'assets/fonts/desyrel.png', 'assets/fonts/desyrel.xml');
 }
 
 //----------------- create -----------------------------------------------------------------
 function create() {
+    // Disable right-click
+    document.body.oncontextmenu = function () { return false; };
     // align center
     this.game.scale.pageAlignHorizontally = true;
     this.game.scale.pageAlignVeritcally = true;
-    this.game.scale.refresh();    
-
-    blockMgr.InitBlockForms();
-
-    //   So we can right-click to erase
-    document.body.oncontextmenu = function () { return false; };
-
-    //Phaser.Canvas.setUserSelect(game.canvas, 'none');
-    //Phaser.Canvas.setTouchAction(game.canvas, 'none');
-
-    // background color
+    this.game.scale.refresh();
+    // back ground
     game.stage.backgroundColor = '#301020';
+    createGameMgr.createRandomGame();
 
-    // create play board
-    createDrawingArea(12, 5, 20, 280);
-    createDrawingArea(12, 5, 280, 280);
-    //createDrawingArea(12, 5, 100, 300);
+    // random button
+    game.add.button(0, 0, 'btn_random', onUpRandom, this, 2, 1, 0);
+    game.add.button(SCREEN_WIDTH-200, 0, 'btn_flip', onUpFlip, this, 2, 1, 0);
 
-    // create blocks
-    blockMgr.createAllBlocks();
+    bmpText = game.add.bitmapText(80, 80, 'font_desyrel', '', 64);
 }
 
 //----------------- update -----------------------------------------------------------------
 function update() {
-    
+    if( createGameMgr.isClear )
+        bmpText.text = 'CLEAR!!';
+    else
+        bmpText.text = '';
 }
 
 //----------------- render -----------------------------------------------------------------
@@ -54,4 +53,12 @@ function render() {
     //game.debug.spriteInputInfo(blockList[0], 32, 32);
     //game.debug.geom(blockList[0].input._tempPoint);
 
+}
+
+function onUpRandom(button, pointer, isOver) {
+   createGameMgr.createRandomGame();
+}
+
+function onUpFlip(button, pointer, isOver) {
+   blockMgr.FlipLastClickedBlock();
 }
