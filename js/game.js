@@ -11,8 +11,8 @@ function preload() {
     //game.scale.setScreenSize();
 
     // load blocks
-    for (var i = 0; i < BLOCK_CNT; ++i) {
-        game.load.image('whole_' + blockName[i], 'assets/whole_' + blockName[i] + '.png');
+    for (var i = 0; i < blockMgr.BLOCK_CNT; ++i) {
+        game.load.image('whole_' + blockMgr.blockName[i], 'assets/whole_' + blockMgr.blockName[i] + '.png');
     }
 }
 
@@ -21,9 +21,9 @@ function create() {
     // align center
     this.game.scale.pageAlignHorizontally = true;
     this.game.scale.pageAlignVeritcally = true;
-    this.game.scale.refresh();
+    this.game.scale.refresh();    
 
-    InitBlockForms();
+    blockMgr.InitBlockForms();
 
     //   So we can right-click to erase
     document.body.oncontextmenu = function () { return false; };
@@ -40,27 +40,12 @@ function create() {
     //createDrawingArea(12, 5, 100, 300);
 
     // create blocks
-    createAllBlocks();
+    blockMgr.createAllBlocks();
 }
 
 //----------------- update -----------------------------------------------------------------
 function update() {
-    mouseOveredBlockToTop();
-}
-
-var lastBlockToTop = -1;
-function mouseOveredBlockToTop(){
-    var len = blockList.length;
-    for(var i = 0; i < len; ++i){
-        if( lastBlockToTop === i )
-            continue;
-        if(blockList[i].input.pointerOver())
-        {
-            game.world.bringToTop(blockList[i]);
-            lastBlockToTop = i;
-            //console.log(i);
-        }
-    }
+    blockMgr.mouseOveredBlockToTop();
 }
 
 //----------------- render -----------------------------------------------------------------
