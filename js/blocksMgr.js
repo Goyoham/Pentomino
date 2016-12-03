@@ -4,7 +4,6 @@ function BlockMgr(){
     /*
     var shadowBlock = 0; // following block like a shadow
     var dragMovement = 0;
-    var lastBlockToTop = -1;
     var blockList = [];
     */
 };
@@ -14,7 +13,6 @@ var blockMgr = new BlockMgr();
 // members ------------------------------------------------------------------------------------
 BlockMgr.prototype.shadowBlock = 0; // following block like a shadow
 BlockMgr.prototype.dragMovement = 0;
-BlockMgr.prototype.lastBlockToTop = -1;
 BlockMgr.prototype.blockList = [];
 
 // static members ------------------------------------------------------------------------------------
@@ -243,6 +241,7 @@ BlockMgr.prototype.createBlock = function(blockType, bFlip) {
 
     // input work as perfectly pixel clicked
     block.input.pixelPerfectOver = true;
+    block.input.pixelPerfectClick = true;
     //block.input.useHandleCursor = true;
 
     return block;
@@ -254,7 +253,7 @@ BlockMgr.prototype.onDragStart = function(block, pointer) {
     this.dragMovement = 0;
 }
 
-BlockMgr.prototype.onDragUpdate = function(block, pointer) {    
+BlockMgr.prototype.onDragUpdate = function(block, pointer) {
     //console.log('onDragUpdate block X:' + block.x + ' Y:' + block.y);
     this.dragMovement += 1;
 
@@ -454,19 +453,3 @@ BlockMgr.prototype.CheckOverlappedBlock = function(myBlock, blockList) {
 
     return false;
 }
-
-
-BlockMgr.prototype.mouseOveredBlockToTop = function(){
-    var len = this.blockList.length;
-    for(var i = 0; i < len; ++i){
-        if( this.lastBlockToTop === i )
-            continue;
-        if(this.blockList[i].input.pointerOver())
-        {
-            game.world.bringToTop(this.blockList[i]);
-            this.lastBlockToTop = i;
-            //console.log(i);
-        }
-    }
-}
-
