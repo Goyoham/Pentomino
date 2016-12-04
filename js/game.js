@@ -32,19 +32,17 @@ function create() {
     game.stage.backgroundColor = '#301020';
     createGameMgr.createRandomGame();
 
-    // random button
+    // buttons
     game.add.button(0, 0, 'btn_random', onUpRandom, this, 2, 1, 0);
     game.add.button(SCREEN_WIDTH-200, 0, 'btn_flip', onUpFlip, this, 2, 1, 0);
 
-    bmpText = game.add.bitmapText(80, 80, 'font_desyrel', '', 64);
+    // text message
+    textMessage.createText();
 }
 
 //----------------- update -----------------------------------------------------------------
 function update() {
-    if( createGameMgr.isClear )
-        bmpText.text = 'CLEAR!!';
-    else
-        bmpText.text = '';
+    textMessage.updateClearText();
 }
 
 //----------------- render -----------------------------------------------------------------
@@ -55,10 +53,10 @@ function render() {
 
 }
 
+// button events
 function onUpRandom(button, pointer, isOver) {
    createGameMgr.createRandomGame();
 }
-
 function onUpFlip(button, pointer, isOver) {
    blockMgr.FlipLastClickedBlock();
 }

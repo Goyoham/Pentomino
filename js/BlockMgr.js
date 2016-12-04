@@ -347,6 +347,7 @@ BlockMgr.prototype.onDragStop = function(block, pointer) {
 }
 
 BlockMgr.prototype.onInputDown = function(block, pointer) {
+    textMessage.clearTextMessage();
     //console.log('onInputDown : '+block.key);
     this.lastClickedBlock = block;
     // shadow
@@ -395,6 +396,7 @@ BlockMgr.prototype.rotateBlock = function(block){
             this.shadowBlock.x = beforeX;
             this.shadowBlock.y = beforeY;
             this.shadowBlock.angle -= 90;
+            textMessage.setTextMessage('not enough space to rotate!');
         }
         else {
             block.angle += 90; // rotate
@@ -404,6 +406,10 @@ BlockMgr.prototype.rotateBlock = function(block){
 
 BlockMgr.prototype.getBlockForm = function(block){
     var state = this._getBlockState(block);
+    return this.getBlockFormFromState(state);
+}
+
+BlockMgr.prototype.getBlockFormFromState = function(state){
     var form = this.blockForms[state.flip][state.rotation][state.type];
     return form;
 }
@@ -511,13 +517,16 @@ BlockMgr.prototype.CheckOverlappedBlock = function(myBlock, blockList) {
 }
 
 BlockMgr.prototype.FlipLastClickedBlock = function(){
-    if( this.lastClickedBlock === 0 )
+    if( this.lastClickedBlock === 0
+        || typeof this.lastClickedBlock === 'undefined' )
+    {
+        textMessage.setTextMessage('none last clicked block!');
         return;
-    if( typeof this.lastClickedBlock === 'undefined' )
-        return;
+    }
     this._setBlockFlip(this.lastClickedBlock);
     if (this.CheckOverlappedBlock(this.lastClickedBlock, this.blockList)) {
         this._setBlockFlip(this.lastClickedBlock);
+        textMessage.setTextMessage('not enough space to flip!');
         return;
     }
     this._setAnchor(this.lastClickedBlock);
