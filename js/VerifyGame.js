@@ -33,9 +33,11 @@ verifyGame = new VerifyGame();
 
 VerifyGame.prototype.MIN_BREADTH = 3; // 최소 너비 또는 높이
 VerifyGame.prototype.MAX_BREADTH = 20; // 최대 너비 또는 높이
+VerifyGame.prototype.caseNum = 1;
 
 VerifyGame.prototype.verify = function(){
-	// 1. 맵 사이즈 정의
+	// 1. 모든 맵 사이즈 루프
+	var num = 1;
 	var width = this.MIN_BREADTH;
 	var height = this.MIN_BREADTH;
 	for(; width <= this.MAX_BREADTH; ++height){
@@ -51,7 +53,9 @@ VerifyGame.prototype.verify = function(){
 			continue;
 		}
 		
+		console.log('board ' + num++ + ' size : ' + width + 'x' + height);
 		this.verifyBoard(width, height);
+		return;//test
 	}
 }
 
@@ -61,9 +65,130 @@ VerifyGame.prototype.verifyBoard = function(width, height){
 	for(var y = 0; y < height; ++y){
 		board[y] = new Array(width);
 		for(var x = 0; x < width; ++x){
-			board[y][x] = -1;
+			board[y][x] = 0;
 		}
 	}
 
+	var boardState = {};
+	boardState.board = board;
+	boardState.type = 0;//0~11(BLOCK_CNT)
+	boardState.state = {};
+	boardState.state.type = '';//alphabet
+    boardState.state.flip = 0;//0~1
+    boardState.state.rotation = 0;//0~3
+    boardState.offsetX = 0;
+    boardState.offsetY = 0;
+	this.putBlocksOnBoard(boardState);
+	// check board
+}
+
+/*
+<이동순서>
+1. (0,0)을 시작으로 X좌표이동
+2. Y좌표 이동.
+3. roate 4회
+4. flip
+5. 다음 블럭
+*/
+VerifyGame.prototype.putBlocksOnBoard = function(boardState){
+	var cn = this.caseNum;
+	this.caseNum = this.caseNum + 1 * 1;
+	var boardSizeX = boardState.board[0].length;
+    var boardSizeY = boardState.board.length;
+
+	while(boardState.type < blockMgr.BLOCK_CNT){
+		boardState.state.type = blockMgr.blockName[boardState.type];
+		var form = blockMgr.getBlockFormFromState(boardState.state);
+		//console.log(state.type);
+		var formSizeX = form[0].length;
+		var formSizeY = form.length;
+		if( formSizeX + boardState.offsetX > boardSizeX ){
+			// x축 초과시 y축 이동
+			boardState.offsetX = 0;
+			boardState.offsetY += 1;
+			continue;
+		}
+		else if( formSizeY + boardState.offsetY > boardSizeY ){
+			// y축 초과시 블럭 모양 변경
+			boardState.offsetX = 0;
+			boardState.offsetY = 0;
+			boardState.state.rotation += 1; // 회전
+			if( boardState.state.rotation >= blockMgr.BLOCK_ROTATION ){
+				boardState.state.rotation = 0;
+				boardState.state.flip += 1; // 반전
+			}
+			if( boardState.state.flip >= blockMgr.BLOCK_FLIP ){
+				boardState.state.flip = 0;
+				boardState.type += 1; // 다음블럭
+			}
+			continue;
+		}
+
+		// check only
+		if( this.insertBlock(boardState, form, true) ){
+			// 블럭을 놓을 수 있을 때, 놓지 않고 다음으로 넘어가서 다른 경우의 수 계산.
+			var cloneBoard = jQuery.extend(true, {}, boardState);
+			cloneBoard.offsetX += 1;
+			this.putBlocksOnBoard(cloneBoard); // make recursive
+
+			// insert block
+			this.insertBlock(boardState, form);
+			boardState.type += 1;
+			boardState.state.flip = 0;
+			boardState.state.rotation = 0;
+			boardState.offsetX = 0;
+			boardState.offsetY = 0;
+		}
+		else{
+			boardState.offsetX += 1;	
+		}		
+	}
+
+	if( this.isCompletedBoard(boardState.board) )
+		this.printBoard(boardState.board, 'case'+cn);
+}
+
+VerifyGame.prototype.insertBlock = function(boardState, form, bCheckOnly){
+	var lenY = form.length;
+	var lenX = form[0].length;
+	for(var y = 0; y < lenY; ++y){
+		for(var x = 0; x < lenX; ++x ){
+			if( form[y][x] === 0 )
+				continue;
+
+			if( boardState.board[y+boardState.offsetY][x+boardState.offsetX] !== 0 )
+				return false;
+			
+			if( bCheckOnly !== true )
+				boardState.board[y+boardState.offsetY][x+boardState.offsetX] = boardState.state.type;				
+		}
+	}
 	
+	return true;
+}
+
+VerifyGame.prototype.isCompletedBoard = function(board){
+	var lenY = board.length;
+	var lenX = board[0].length;
+	for(var y = 0; y < lenY; ++y){
+		for(var x = 0; x < lenX; ++x ){
+			if( board[y][x] === 0 )
+				return false;
+		}
+	}
+	return true;
+}
+
+VerifyGame.prototype.printBoard = function(board, msg){
+	if( typeof msg !== 'undefined' )
+		console.log(msg);
+	var lenY = board.length;
+	var lenX = board[0].length;
+	for(var y = 0; y < lenY; ++y){
+		var line = '';
+		for(var x = 0; x < lenX; ++x){
+			line += (board[y][x]+' ');
+		}
+		console.log(line);
+	}
 }

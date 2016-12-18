@@ -38,6 +38,9 @@ function create() {
 
     // text message
     textMessage.createText();
+
+    // 모든 경우의 수 계산
+    verifyGame.verify();
 }
 
 //----------------- update -----------------------------------------------------------------

@@ -19,6 +19,8 @@ BlockMgr.prototype.blockList = [];
 // static members ------------------------------------------------------------------------------------
 BlockMgr.prototype.blockName = ['F', 'I', 'L', 'N', 'P', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 BlockMgr.prototype.BLOCK_CNT = 12; // kind
+BlockMgr.prototype.BLOCK_ROTATION = 4;
+BlockMgr.prototype.BLOCK_FLIP = 2; 
 BlockMgr.prototype.BLOCK_VOLUME = 5;
 BlockMgr.prototype.SIZE_ONE_BLOCK = 20;
 BlockMgr.prototype.blockForms;
