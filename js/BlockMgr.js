@@ -199,6 +199,27 @@ BlockMgr.prototype._setAnchor = function(block){
     block.anchor.setTo(w, h);
 }
 
+//['F', 'I', 'L', 'N', 'P', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+//
+BlockMgr.prototype._isCannotFlip = function(type){
+    switch(type){
+        case 'I':
+        case 'T':
+        case 'U':
+        case 'X':
+        return true;
+    }
+    return false;
+}
+
+BlockMgr.prototype._isCannotRotate = function(type){
+    switch(type){
+        case 'X':
+        return true;
+    }
+    return false;
+}
+
 // functions members ------------------------------------------------------------------------------------
 BlockMgr.prototype.InitBlockForms = function(){
     var flippedForm = this._makeFlippedForm(this.blockForm);

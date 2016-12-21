@@ -34,6 +34,10 @@ verifyGame = new VerifyGame();
 VerifyGame.prototype.MIN_BREADTH = 3; // 최소 너비 또는 높이
 VerifyGame.prototype.MAX_BREADTH = 20; // 최대 너비 또는 높이
 VerifyGame.prototype.caseNum = 1;
+VerifyGame.prototype.resultNum = 1;
+VerifyGame.prototype.verifiedSerializedBoards = {};
+VerifyGame.prototype.verifiedBoards = {};
+VerifyGame.prototype.MAX_FIND_NUM = 10;
 
 VerifyGame.prototype.verify = function(){
 	// 1. 모든 맵 사이즈 루프
@@ -52,11 +56,21 @@ VerifyGame.prototype.verify = function(){
 		{
 			continue;
 		}
-		
+		// test
+		//width = 5;
+		//height = 6;
+		//test
+		this.resultNum = 1;
 		console.log('board ' + num++ + ' size : ' + width + 'x' + height);
+		var old_time = new Date();
 		this.verifyBoard(width, height);
-		return;//test
+		var new_time = new Date();
+		var seconds_passed = new_time - old_time;
+		console.log('passedTime : ' + seconds_passed / 1000);
+		//break;//test
 	}
+
+	console.log(this.verifiedBoards);
 }
 
 VerifyGame.prototype.verifyBoard = function(width, height){
@@ -78,6 +92,7 @@ VerifyGame.prototype.verifyBoard = function(width, height){
     boardState.state.rotation = 0;//0~3
     boardState.offsetX = 0;
     boardState.offsetY = 0;
+    boardState.blockList = '';
 	this.putBlocksOnBoard(boardState);
 	// check board
 }
@@ -96,7 +111,11 @@ VerifyGame.prototype.putBlocksOnBoard = function(boardState){
 	var boardSizeX = boardState.board[0].length;
     var boardSizeY = boardState.board.length;
 
+    //var sizeTypeStr = this.getBoardSizeStr(boardState.board); // test break
 	while(boardState.type < blockMgr.BLOCK_CNT){
+		//if( this.verifiedBoards.hasOwnProperty(sizeTypeStr) )
+		//	return; // test break
+
 		boardState.state.type = blockMgr.blockName[boardState.type];
 		var form = blockMgr.getBlockFormFromState(boardState.state);
 		//console.log(state.type);
@@ -113,11 +132,15 @@ VerifyGame.prototype.putBlocksOnBoard = function(boardState){
 			boardState.offsetX = 0;
 			boardState.offsetY = 0;
 			boardState.state.rotation += 1; // 회전
-			if( boardState.state.rotation >= blockMgr.BLOCK_ROTATION ){
+			if( boardState.state.rotation >= blockMgr.BLOCK_ROTATION )
+			{
 				boardState.state.rotation = 0;
 				boardState.state.flip += 1; // 반전
 			}
-			if( boardState.state.flip >= blockMgr.BLOCK_FLIP ){
+
+			if( boardState.state.flip >= blockMgr.BLOCK_FLIP 
+				|| ( boardState.state.flip > 0 && blockMgr._isCannotFlip(boardState.state.type) ) )
+			{
 				boardState.state.flip = 0;
 				boardState.type += 1; // 다음블럭
 			}
@@ -126,18 +149,24 @@ VerifyGame.prototype.putBlocksOnBoard = function(boardState){
 
 		// check only
 		if( this.insertBlock(boardState, form, true) ){
-			// 블럭을 놓을 수 있을 때, 놓지 않고 다음으로 넘어가서 다른 경우의 수 계산.
-			var cloneBoard = jQuery.extend(true, {}, boardState);
-			cloneBoard.offsetX += 1;
-			this.putBlocksOnBoard(cloneBoard); // make recursive
-
+			// 블럭을 놓을 수 있을 때, 놓지 않고 다음으로 넘어가서 다른 경우의 수 계산.			
+			var cloneBoardState = jQuery.extend(true, {}, boardState);
+			cloneBoardState.offsetX += 1;
+			this.putBlocksOnBoard(cloneBoardState); // make recursive
+			
 			// insert block
 			this.insertBlock(boardState, form);
+
+			if( false === this.checkImpossiblePlacement(boardState.board) )
+				return;
+			
 			boardState.type += 1;
 			boardState.state.flip = 0;
 			boardState.state.rotation = 0;
 			boardState.offsetX = 0;
 			boardState.offsetY = 0;
+
+			boardState.blockList += boardState.state.type;
 		}
 		else{
 			boardState.offsetX += 1;	
@@ -145,17 +174,18 @@ VerifyGame.prototype.putBlocksOnBoard = function(boardState){
 	}
 
 	if( this.isCompletedBoard(boardState.board) )
-		this.printBoard(boardState.board, 'case'+cn);
+	{
+		this.insertCompletedBoard(boardState);
+		//this.printBoard(boardState.board, 'case'+cn);
+	}
 }
 
 VerifyGame.prototype.insertBlock = function(boardState, form, bCheckOnly){
-	var lenY = form.length;
-	var lenX = form[0].length;
-	for(var y = 0; y < lenY; ++y){
-		for(var x = 0; x < lenX; ++x ){
+	for(var y in form){
+		for(var x in form[y]){
 			if( form[y][x] === 0 )
 				continue;
-
+			y*=1;x*=1; // 짱난다..
 			if( boardState.board[y+boardState.offsetY][x+boardState.offsetX] !== 0 )
 				return false;
 			
@@ -167,11 +197,44 @@ VerifyGame.prototype.insertBlock = function(boardState, form, bCheckOnly){
 	return true;
 }
 
+var dirX = [1, 0, -1, 0];
+var dirY = [0, 1, 0, -1];
+var dir = 4;
+VerifyGame.prototype.checkImpossiblePlacement = function(board){
+	var cloneBoard = jQuery.extend(true, [], board);
+	var lenX = cloneBoard[0].length;
+	var lenY = cloneBoard.length;
+	var space = 0;
+	var _check = function(x, y){
+		for(var d = 0; d < dir; ++d){
+			var dx = 1*x + dirX[d];
+			var dy = 1*y + dirY[d];
+			if( dx < 0 || dy < 0 || dx >= lenX || dy >= lenY )
+				continue;
+			if( cloneBoard[dy][dx] !== 0 )
+				continue;
+			cloneBoard[dy][dx] = 1;
+			space += 1;
+			_check(dx, dy);
+		}
+	}
+
+	for(var y in cloneBoard){
+		for(var x in cloneBoard[y]){
+			if(cloneBoard[y][x] !== 0)
+				continue;
+			space = 0;
+			_check(x, y);
+			if( space % blockMgr.BLOCK_VOLUME !== 0)
+				return false;
+		}
+	}
+	return true;
+}
+
 VerifyGame.prototype.isCompletedBoard = function(board){
-	var lenY = board.length;
-	var lenX = board[0].length;
-	for(var y = 0; y < lenY; ++y){
-		for(var x = 0; x < lenX; ++x ){
+	for(var y in board){
+		for(var x in board[y]){
 			if( board[y][x] === 0 )
 				return false;
 		}
@@ -182,13 +245,67 @@ VerifyGame.prototype.isCompletedBoard = function(board){
 VerifyGame.prototype.printBoard = function(board, msg){
 	if( typeof msg !== 'undefined' )
 		console.log(msg);
-	var lenY = board.length;
-	var lenX = board[0].length;
-	for(var y = 0; y < lenY; ++y){
+	for(var y in board){
 		var line = '';
-		for(var x = 0; x < lenX; ++x){
+		for(var x in board[y]){
 			line += (board[y][x]+' ');
 		}
 		console.log(line);
 	}
+}
+
+VerifyGame.prototype.insertCompletedBoard = function(boardState){
+	var board = boardState.board;
+	var serializedBoards = this.serializeBoard(board);
+	var sizeTypeStr = this.getBoardSizeStr(board);
+	if( !this.verifiedSerializedBoards.hasOwnProperty(sizeTypeStr) ){
+		this.verifiedSerializedBoards[sizeTypeStr] = new Set();
+	}
+
+	if( this.verifiedSerializedBoards[sizeTypeStr].has(serializedBoards[0]) )
+		return;
+
+	for(var i in serializedBoards){
+		this.verifiedSerializedBoards[sizeTypeStr].add(serializedBoards[i]);
+	}
+
+	if( !this.verifiedBoards.hasOwnProperty(sizeTypeStr) ){
+		this.verifiedBoards[sizeTypeStr] = {};
+	}
+
+	var blockList = boardState.blockList;
+	if( !this.verifiedBoards[sizeTypeStr].hasOwnProperty(blockList) ){
+		this.verifiedBoards[sizeTypeStr][blockList] = [];
+	}
+
+	this.verifiedBoards[sizeTypeStr][blockList].push(board);
+	//log
+	//this.printBoard(board, '<Result ' + this.resultNum++ + '> ' + boardState.blockList);
+	console.log('<Result ' + this.resultNum++ + '> ' + boardState.blockList);
+}
+
+VerifyGame.prototype.getBoardSizeStr = function(board){
+	var height = board.length;
+	var width = board[0].length;	
+	return width+'x'+height;
+}
+
+VerifyGame.prototype.serializeBoard = function(board){	
+	var height = board.length;
+	var width = board[0].length;
+	var serializedBoards = ['', '', '', ''];
+	for(var y in board){
+		for(var x in board[y]){
+			serializedBoards[0] += board[y][x];
+			serializedBoards[1] += board[y][width-x-1];
+			serializedBoards[2] += board[height-y-1][x];
+			serializedBoards[3] += board[height-y-1][width-x-1];
+		}
+	}
+	//console.log(serializedBoards);
+	return serializedBoards;
+}
+
+VerifyGame.prototype.deserializeBoard = function(serializedBoard){
+	
 }
