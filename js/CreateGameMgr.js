@@ -9,6 +9,10 @@ CreateGameMgr.prototype.canvasZoom = 20;
 CreateGameMgr.prototype.gameBoard;
 CreateGameMgr.prototype.boardOffset = {x: 0, y:0};
 CreateGameMgr.prototype.isClear = false;
+CreateGameMgr.prototype.hintBlockList = '';
+CreateGameMgr.prototype.currBlockList = '';
+CreateGameMgr.prototype.hintSpriteList = [];
+CreateGameMgr.prototype.hintNum = -1;
 
 // draw board
 CreateGameMgr.prototype.canvas;
@@ -36,8 +40,8 @@ CreateGameMgr.prototype.getRandomBoardSize = function(){
 }
 
 // functions members ------------------------------------------------------------------------------------
-CreateGameMgr.prototype.createGame = function(width, height){
-	console.log('createGame: ' + width + ' '+ height);
+CreateGameMgr.prototype.createGame = function(width, height, blockList, hint){
+	console.log('createGame: ' + width + 'x'+ height + ' ' + blockList);
 	blockMgr.InitBlockForms();
 
 	var offsetX = this.getOffsetCenter(width, SCREEN_WIDTH);
@@ -45,20 +49,28 @@ CreateGameMgr.prototype.createGame = function(width, height){
 	this.createGameBoard(width, height, offsetX, offsetY);
 
     blockMgr.eraseBlocks();
-    var needBlock = (width * height) / blockMgr.BLOCK_VOLUME;
-    blockMgr.createRandomBlocks( needBlock+1 );
+    //var needBlock = (width * height) / blockMgr.BLOCK_VOLUME;
+    //blockMgr.createRandomBlocks( needBlock+1 );
+	blockMgr.createBlocks(blockList);
+	this.currBlockList = blockList;	
+	this.resetHint(hint);
 }
 
 CreateGameMgr.prototype.createRandomGame = function(){
-	var size = this.getRandomBoardSize();
-	this.createGame(size.width, size.height);
+	//var size = this.getRandomBoardSize();
+	var ranPattern = patternData.getRandomPattern();
+	this.createGame(ranPattern.width, ranPattern.height, ranPattern.blockList, ranPattern.hint);
+	this.isClear = false;
 }
 
 CreateGameMgr.prototype.InitGameBoardArray = function(width, height){
 	this.gameBoard = new Array(height);
 	for(var y = 0; y < height; ++y){
-		this.gameBoard[y] = new Array(width);
-	}
+		this.gameBoard[y] = [];
+		for(var x = 0; x < width; ++x){
+			this.gameBoard[y].push(0);
+		}
+	}	
 	this.clearGameBoardArray();
 }
 
@@ -83,6 +95,7 @@ CreateGameMgr.prototype.fillGameBoardArray = function(blockList){
 
 CreateGameMgr.prototype.CheckFullGameBoardArray = function(){
 	var lenY = this.gameBoard.length;
+	var lenX = this.gameBoard[0].length;
 	for(var y = 0; y < lenY; ++y){
 		var lenX = this.gameBoard[y].length;
 		for(var x = 0; x < lenX; ++x){
@@ -90,7 +103,7 @@ CreateGameMgr.prototype.CheckFullGameBoardArray = function(){
 				return false;
 		}
 	}
-	console.log('CLEAR!!');
+	console.log('CLEAR!!' + lenX + 'x' + lenY);
 	return true;
 }
 
@@ -154,4 +167,39 @@ CreateGameMgr.prototype.createGameBoard = function(spriteWidth, spriteHeight, of
     // checkline
     this.canvasGrid = game.add.sprite(x + 1, y + 1, gridName);
     this.canvasGrid.crop(new Phaser.Rectangle(0, 0, spriteWidth * this.canvasZoom, spriteHeight * this.canvasZoom));
+}
+
+CreateGameMgr.prototype.resetHint = function(hint){
+	this.hintBlockList = hint;
+	this.hintNum = -1;
+	this.HideHint();
+	textMessage.updateHintText(0);
+}
+
+CreateGameMgr.prototype.ShowHint = function(){
+	//console.log('show hint : ' + this.hintBlockList);
+	this.HideHint();
+	var hintIndex = (++this.hintNum) % this.currBlockList.length;
+	var hintBlockType = this.currBlockList[hintIndex];
+	var arrBlock = this.hintBlockList.split('_');
+	for(var y in arrBlock){
+		for(var x in arrBlock[y]){
+			if( arrBlock[y][x] !== hintBlockType )
+				continue;
+			
+			var offsetX = (blockMgr.SIZE_ONE_BLOCK * this.boardOffset.x) + (x * this.canvasZoom)+1;
+			var offsetY = (blockMgr.SIZE_ONE_BLOCK * this.boardOffset.y) + (y * this.canvasZoom)+1;
+			var hintBlock = game.add.sprite(offsetX, offsetY, 'hintBlock');
+			this.hintSpriteList.push(hintBlock);
+		}
+	}
+	textMessage.updateHintText(this.hintNum+1);
+	//setTimeout('createGameMgr.HideHint()', 3000);
+}
+
+CreateGameMgr.prototype.HideHint = function(){
+	for(var i in this.hintSpriteList){
+		this.hintSpriteList[i].kill();
+	}
+	this.hintSpriteList = [];
 }

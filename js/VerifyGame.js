@@ -57,20 +57,22 @@ VerifyGame.prototype.verify = function(){
 			continue;
 		}
 		// test
-		//width = 5;
-		//height = 6;
+		width = 9;
+		height = 5;
 		//test
 		this.resultNum = 1;
 		console.log('board ' + num++ + ' size : ' + width + 'x' + height);
 		var old_time = new Date();
 		this.verifyBoard(width, height);
 		var new_time = new Date();
-		var seconds_passed = new_time - old_time;
-		console.log('passedTime : ' + seconds_passed / 1000);
-		//break;//test
+		var seconds_passed = (new_time - old_time) / 1000;
+		console.log('elapsedTime : ' + seconds_passed);
+		break;//test
 	}
 
 	console.log(this.verifiedBoards);
+	this.writeVerifiedBoards();
+	console.log('done');
 }
 
 VerifyGame.prototype.verifyBoard = function(width, height){
@@ -254,6 +256,20 @@ VerifyGame.prototype.printBoard = function(board, msg){
 	}
 }
 
+VerifyGame.prototype.writeVerifiedBoards = function(){
+	for(var sizeTypeStr in this.verifiedBoards){
+		console.log('>>'+sizeTypeStr);
+		for(var blocksStr in this.verifiedBoards[sizeTypeStr]){
+			console.log('>'+blocksStr);
+			for(var index in this.verifiedBoards[sizeTypeStr][blocksStr])
+			{
+				var board = this.verifiedBoards[sizeTypeStr][blocksStr][index];
+				console.log(this.serializeBoardSingle(board));
+			}			
+		}
+	}
+}
+
 VerifyGame.prototype.insertCompletedBoard = function(boardState){
 	var board = boardState.board;
 	var serializedBoards = this.serializeBoard(board);
@@ -304,6 +320,16 @@ VerifyGame.prototype.serializeBoard = function(board){
 	}
 	//console.log(serializedBoards);
 	return serializedBoards;
+}
+
+VerifyGame.prototype.serializeBoardSingle = function(board){
+	var serializedBoard = '';
+	for(var y in board){
+		for(var x in board[y]){
+			serializedBoard += board[y][x];
+		}
+	}	
+	return serializedBoard;
 }
 
 VerifyGame.prototype.deserializeBoard = function(serializedBoard){

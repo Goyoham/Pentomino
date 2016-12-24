@@ -281,6 +281,23 @@ BlockMgr.prototype.createRandomBlocks = function(num){
     }
 }
 
+BlockMgr.prototype.createBlocks = function(blockListStr){
+    for (var i in blockListStr) {
+        var block = this.createBlock(blockListStr[i], false);
+        block.y = 400;
+        while(this.CheckOverlappedBlock(block, this.blockList)) {
+            if( block.x > SCREEN_WIDTH ){
+                block.x = 0;
+                block.y += blockMgr.SIZE_ONE_BLOCK;
+            }
+            else{
+                block.x += blockMgr.SIZE_ONE_BLOCK;
+            }
+        }
+        this.blockList.push(block);
+    }
+}
+
 BlockMgr.prototype.createBlock = function(blockType, bFlip) {
     // real block
     var block = game.add.sprite(0, 0, 'whole_' + blockType);

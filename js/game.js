@@ -15,8 +15,10 @@ function preload() {
         game.load.image('whole_' + blockMgr.blockName[i], 'assets/whole_' + blockMgr.blockName[i] + '.png');
     }
 
+    game.load.image('hintBlock', 'assets/hintBlock.png');
     game.load.spritesheet('btn_random', 'assets/btn_random.png', 120, 39);
-    game.load.spritesheet('btn_flip', 'assets/btn_flip.png', 200, 39);
+    game.load.spritesheet('btn_hint', 'assets/btn_hint.png', 60, 39);
+    game.load.spritesheet('btn_flip', 'assets/btn_flip.png', 160, 39);
     game.load.bitmapFont('font_desyrel', 'assets/fonts/desyrel.png', 'assets/fonts/desyrel.xml');
 }
 
@@ -29,18 +31,22 @@ function create() {
     this.game.scale.pageAlignVeritcally = true;
     this.game.scale.refresh();
     // back ground
-    game.stage.backgroundColor = '#301020';
+    game.stage.backgroundColor = '#301020';    
+    // 패턴 로드
+    patternData.ReadData();    
+    // text message
+    textMessage.createText();
+    // 게임 생성
     createGameMgr.createRandomGame();
 
     // buttons
     game.add.button(0, 0, 'btn_random', onUpRandom, this, 2, 1, 0);
-    game.add.button(SCREEN_WIDTH-200, 0, 'btn_flip', onUpFlip, this, 2, 1, 0);
+    game.add.button(150, 0, 'btn_hint', onUpHint, this, 2, 1, 0);
+    game.add.button(SCREEN_WIDTH-160, 0, 'btn_flip', onUpFlip, this, 2, 1, 0);
 
-    // text message
-    textMessage.createText();
 
     // 모든 경우의 수 계산
-    verifyGame.verify();
+    //verifyGame.verify();
 }
 
 //----------------- update -----------------------------------------------------------------
@@ -62,4 +68,7 @@ function onUpRandom(button, pointer, isOver) {
 }
 function onUpFlip(button, pointer, isOver) {
    blockMgr.FlipLastClickedBlock();
+}
+function onUpHint(button, pointer, isOver) {
+   createGameMgr.ShowHint();
 }

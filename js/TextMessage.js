@@ -6,8 +6,9 @@ function TextMessage(){
 textMessage = new TextMessage();
 
 TextMessage.prototype.textContent;
-TextMessage.prototype.timerDisappear;
 TextMessage.prototype.textClear;
+TextMessage.prototype.texthint;
+TextMessage.prototype.timerDisappear;
 
 TextMessage.prototype.createText = function(){
 	// message text
@@ -17,6 +18,9 @@ TextMessage.prototype.createText = function(){
 
     // clear text
     this.textClear = game.add.bitmapText(80, 80, 'font_desyrel', '', 64);
+
+	// hint text
+	this.texthint = game.add.text(135, 40, '', { font: "20px Arial", fill: "#FFFFFF", align: "center" });
 }
 
 TextMessage.prototype.setTextMessage = function(msg){
@@ -36,7 +40,11 @@ TextMessage.prototype.onTimerDisappear = function(){
 
 TextMessage.prototype.updateClearText = function(){
 	if( createGameMgr.isClear )
-        this.textClear.text = 'CLEAR!!';
-    else
-        this.textClear.text = '';
+   		this.textClear.text = 'CLEAR!!';
+	else
+		this.textClear.text = '';
+}
+
+TextMessage.prototype.updateHintText = function(usedHint){
+	this.texthint.text = 'UsedHint:'+usedHint;
 }
