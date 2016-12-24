@@ -1,5 +1,5 @@
-var SCREEN_WIDTH = 400;
-var SCREEN_HEIGHT = 600;
+var SCREEN_WIDTH = 360;
+var SCREEN_HEIGHT = 500;
 var game = new Phaser.Game(SCREEN_WIDTH, SCREEN_HEIGHT
     , Phaser.AUTO, 'Pentomino'
     , { preload: preload, create: create, update: update, render: render });
@@ -41,7 +41,7 @@ function create() {
 
     // buttons
     game.add.button(0, 0, 'btn_random', onUpRandom, this, 2, 1, 0);
-    game.add.button(150, 0, 'btn_hint', onUpHint, this, 2, 1, 0);
+    game.add.button(130, 0, 'btn_hint', onUpHint, this, 2, 1, 0);
     game.add.button(SCREEN_WIDTH-160, 0, 'btn_flip', onUpFlip, this, 2, 1, 0);
 
 

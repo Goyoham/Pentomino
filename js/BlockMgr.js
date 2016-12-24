@@ -266,7 +266,7 @@ BlockMgr.prototype.createRandomBlocks = function(num){
     for (var i = 0; i < num;) {
         var index = makeBlockIndex[i];
         var block = this.createBlock(this.blockName[index], false);
-        block.y = 400;
+        block.y = 320;
         while(this.CheckOverlappedBlock(block, this.blockList)) {
             if( block.x > SCREEN_WIDTH ){
                 block.x = 0;
@@ -284,7 +284,7 @@ BlockMgr.prototype.createRandomBlocks = function(num){
 BlockMgr.prototype.createBlocks = function(blockListStr){
     for (var i in blockListStr) {
         var block = this.createBlock(blockListStr[i], false);
-        block.y = 400;
+        block.y = 320;
         while(this.CheckOverlappedBlock(block, this.blockList)) {
             if( block.x > SCREEN_WIDTH ){
                 block.x = 0;

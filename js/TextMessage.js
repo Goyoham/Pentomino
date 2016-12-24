@@ -17,10 +17,10 @@ TextMessage.prototype.createText = function(){
     this.timerDisappear = game.time.create(false);    
 
     // clear text
-    this.textClear = game.add.bitmapText(80, 80, 'font_desyrel', '', 64);
+    this.textClear = game.add.bitmapText(60, 230, 'font_desyrel', '', 64);
 
 	// hint text
-	this.texthint = game.add.text(135, 40, '', { font: "20px Arial", fill: "#FFFFFF", align: "center" });
+	this.texthint = game.add.text(100, 40, '', { font: "20px Arial", fill: "#FFFFFF", align: "center" });
 }
 
 TextMessage.prototype.setTextMessage = function(msg){
@@ -46,5 +46,5 @@ TextMessage.prototype.updateClearText = function(){
 }
 
 TextMessage.prototype.updateHintText = function(usedHint){
-	this.texthint.text = 'UsedHint:'+usedHint;
+	this.texthint.text = '<Used Hint:'+usedHint+'>';
 }
