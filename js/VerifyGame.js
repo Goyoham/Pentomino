@@ -57,7 +57,7 @@ VerifyGame.prototype.verify = function(){
 			continue;
 		}
 		// test
-		width = 9;
+		width = 6;
 		height = 5;
 		//test
 		this.resultNum = 1;

@@ -139,7 +139,7 @@ CreateGameMgr.prototype.createGameBoard = function(spriteWidth, spriteHeight, of
     // draw play board
     game.create.grid(
     	gridName
-    	, 12 * this.canvasZoom
+    	, 20 * this.canvasZoom
     	, 6 * this.canvasZoom
     	, this.canvasZoom
     	, this.canvasZoom
