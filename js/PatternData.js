@@ -96,18 +96,67 @@ PatternData.prototype.getRandomPattern = function(){
     randomPattern.height = size.height;
     randomPattern.blockList = blockRanKey;
     randomPattern.hint = this.makeHint(size.width, _getRandomPropertyArr(this.patterns[sizeRanKey][blockRanKey]));
+    randomPattern.blockListMap = this.makeBlockListMap(blockRanKey, randomPattern.hint);
     return randomPattern;
 }
 
-PatternData.prototype.makeHint = function(width, hint){
+PatternData.prototype.makeHint = function(width, blockArray){
     var result = '';
-    for(var i in hint){
-        result += hint[i];
+    for(var i in blockArray){
+        result += blockArray[i];
         var index = i*1+1;
-        if( index % width === 0 && index != hint.length )
+        if( index % width === 0 && index != blockArray.length )
             result += '_';
     }
     return result;
+}
+
+PatternData.prototype.makeBlockListMap = function(blockList, hint){
+    var split = hint.split('_');
+    var _getForm = function(split, type){
+        var lenY = split.length;
+        var lenX = split[0].length;
+        var maxX = 0, minX = lenX;
+        var maxY = 0, minY = lenY;
+        for(var y = 0; y < lenY; ++y){
+            for(var x = 0; x < lenX; ++x){
+                if( split[y][x] === type ){
+                    if( y < minY ) minY = y;
+                    else if( y > maxY ) maxY = y;
+                    if( x < minX ) minX = x;
+                    else if( x > maxX ) maxX = x;
+                }
+            }
+        }
+        var form = [];
+        for(var y = minY; y <= maxY; ++y){
+            var line = [];
+            for(var x = minX; x <= maxX; ++x){
+                if( split[y][x] === type )
+                    line.push(1);
+                else
+                    line.push(0)
+            }
+            form.push(line);
+        }
+        return form;
+    }
+
+    var blockListMap = [];
+    for(var i in blockList){
+        var blockType = blockList[i];
+        var state = {};
+        state.type = blockType;
+        state.flip = 0;
+        state.rotation = 0;
+
+        // get form from split
+        var form = _getForm(split, blockType);
+        var state = blockMgr.getBlockStateFromForm(form, blockType);
+
+        blockListMap.push(state);
+    }
+    return blockListMap;
 }
 
 PatternData.prototype.data = [

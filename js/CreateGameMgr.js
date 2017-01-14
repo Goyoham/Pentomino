@@ -40,26 +40,24 @@ CreateGameMgr.prototype.getRandomBoardSize = function(){
 }
 
 // functions members ------------------------------------------------------------------------------------
-CreateGameMgr.prototype.createGame = function(width, height, blockList, hint){
-	console.log('createGame: ' + width + 'x'+ height + ' ' + blockList);
-	blockMgr.InitBlockForms();
-
-	var offsetX = this.getOffsetCenter(width, SCREEN_WIDTH);
-	var offsetY = this.getOffsetCenter(height, SCREEN_HEIGHT) - 80;
-	this.createGameBoard(width, height, offsetX, offsetY);
+CreateGameMgr.prototype.createGame = function(ranPattern){
+	console.log('createGame: ' + ranPattern.width + 'x'+ ranPattern.height + ' ' + ranPattern.blockList);
+	var offsetX = this.getOffsetCenter(ranPattern.width, SCREEN_WIDTH);
+	var offsetY = this.getOffsetCenter(ranPattern.height, SCREEN_HEIGHT) - 80;
+	this.createGameBoard(ranPattern.width, ranPattern.height, offsetX, offsetY);
 
     blockMgr.eraseBlocks();
     //var needBlock = (width * height) / blockMgr.BLOCK_VOLUME;
     //blockMgr.createRandomBlocks( needBlock+1 );
-	blockMgr.createBlocks(blockList);
-	this.currBlockList = blockList;	
-	this.resetHint(hint);
+	blockMgr.createBlocks(ranPattern.blockListMap);
+	this.currBlockList = ranPattern.blockList;	
+	this.resetHint(ranPattern.hint);
 }
 
 CreateGameMgr.prototype.createRandomGame = function(){
 	//var size = this.getRandomBoardSize();
 	var ranPattern = patternData.getRandomPattern();
-	this.createGame(ranPattern.width, ranPattern.height, ranPattern.blockList, ranPattern.hint);
+	this.createGame(ranPattern);
 	this.isClear = false;
 }
 

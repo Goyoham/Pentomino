@@ -149,6 +149,10 @@ BlockMgr.prototype._setBlockFlip = function(block){
     block.scale.x *= -1;
 }
 
+BlockMgr.prototype._setBlockRotate = function(block, rotation){
+    block.angle += (rotation*90);
+}
+
 BlockMgr.prototype._getBlockRotation = function(block){
     return ((block.angle + 360) / 90) % 4;
 }
@@ -281,9 +285,9 @@ BlockMgr.prototype.createRandomBlocks = function(num){
     }
 }
 
-BlockMgr.prototype.createBlocks = function(blockListStr){
-    for (var i in blockListStr) {
-        var block = this.createBlock(blockListStr[i], false);
+BlockMgr.prototype.createBlocks = function(blockListMap){
+    for (var i in blockListMap) {
+        var block = this.createBlock(blockListMap[i]);
         block.y = 320;
         while(this.CheckOverlappedBlock(block, this.blockList)) {
             if( block.x > SCREEN_WIDTH ){
@@ -298,11 +302,12 @@ BlockMgr.prototype.createBlocks = function(blockListStr){
     }
 }
 
-BlockMgr.prototype.createBlock = function(blockType, bFlip) {
+BlockMgr.prototype.createBlock = function(blockState) {
     // real block
-    var block = game.add.sprite(0, 0, 'whole_' + blockType);
-    if( bFlip === true )
+    var block = game.add.sprite(0, 0, 'whole_' + blockState.type);
+    if( blockState.flip === 1 )
         this._setBlockFlip(block);
+    this._setBlockRotate(block, blockState.rotation);
 
     // find anchor to rotate
     this._setAnchor(block);
@@ -402,8 +407,8 @@ BlockMgr.prototype.onInputDown = function(block, pointer) {
 
 BlockMgr.prototype.onInputUp = function(block, pointer) {
     //console.log('onInputUp');
-    if (this.dragMovement <= 2) {
-        this.rotateBlock(block);
+    if (this.dragMovement <= 3) {
+        //this.rotateBlock(block); // isRotationGame
     }
 
     if (this.shadowBlock !== 0) {        
@@ -452,6 +457,40 @@ BlockMgr.prototype.getBlockForm = function(block){
 BlockMgr.prototype.getBlockFormFromState = function(state){
     var form = this.blockForms[state.flip][state.rotation][state.type];
     return form;
+}
+
+BlockMgr.prototype._IsSameForm = function(form1, form2){
+    if( form1.length !== form2.length )
+        return false;
+    
+    if( form1[0].length !== form2[0].length )
+        return false;
+
+    for(var y in form1){
+        for(var x in form1[y]){
+            if( form1[y][x] !== form2[y][x] )
+                return false;
+        }
+    }
+    return true;
+}
+
+BlockMgr.prototype.getBlockStateFromForm = function(form, type){
+    var state = {};
+    state.type = type;
+    state.flip = 0;
+    state.rotation = 0;
+    for(var f = 0; f < this.BLOCK_FLIP; ++f){
+        for(var r = 0; r < this.BLOCK_ROTATION; ++r){            
+            if( this._IsSameForm(form, this.blockForms[f][r][type]) )
+            {
+                state.flip = f;
+                state.rotation = r;
+                return state;
+            }            
+        }
+    }
+    return state;
 }
 
 BlockMgr.prototype.getBlockPos = function(block) {
