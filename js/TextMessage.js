@@ -20,7 +20,7 @@ TextMessage.prototype.createText = function(){
     this.textClear = game.add.bitmapText(60, 230, 'font_desyrel', '', 64);
 
 	// hint text
-	this.texthint = game.add.text(100, 40, '', { font: "20px Arial", fill: "#FFFFFF", align: "center" });
+	this.texthint = game.add.text(115, 40, '', { font: "20px Arial", fill: "#FFFFFF", align: "center" });
 }
 
 TextMessage.prototype.setTextMessage = function(msg){

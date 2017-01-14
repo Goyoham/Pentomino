@@ -17,6 +17,8 @@ function preload() {
 
     game.load.image('hintBlock', 'assets/hintBlock.png');
     game.load.spritesheet('btn_random', 'assets/btn_random.png', 120, 39);
+    game.load.spritesheet('btn_NextLevel', 'assets/btn_NextLevel.png', 120, 39);
+    game.load.spritesheet('btn_SameLevel', 'assets/btn_SameLevel.png', 120, 39);
     game.load.spritesheet('btn_hint', 'assets/btn_hint.png', 60, 39);
     game.load.spritesheet('btn_flip', 'assets/btn_flip.png', 160, 39);
     game.load.bitmapFont('font_desyrel', 'assets/fonts/desyrel.png', 'assets/fonts/desyrel.xml');
@@ -42,8 +44,10 @@ function create() {
     createGameMgr.createRandomGame();
 
     // buttons
-    game.add.button(0, 0, 'btn_random', onUpRandom, this, 2, 1, 0);
-    game.add.button(130, 0, 'btn_hint', onUpHint, this, 2, 1, 0);
+    //game.add.button(0, 0, 'btn_random', onUpRandom, this, 2, 1, 0);
+    game.add.button(360-120, 0, 'btn_NextLevel', onUpNextLevel, this, 2, 1, 0);
+    game.add.button(0, 0, 'btn_SameLevel', onUpSameLevel, this, 2, 1, 0);
+    game.add.button(150, 0, 'btn_hint', onUpHint, this, 2, 1, 0);
     //game.add.button(SCREEN_WIDTH-160, 0, 'btn_flip', onUpFlip, this, 2, 1, 0); // isFlipGame
 
 
@@ -66,11 +70,18 @@ function render() {
 
 // button events
 function onUpRandom(button, pointer, isOver) {
-   createGameMgr.createRandomGame();
+    createGameMgr.createRandomGame();
+}
+function onUpNextLevel(button, pointer, isOver) {
+    patternData.UpdateNextLevel();
+    createGameMgr.createRandomGame();
+}
+function onUpSameLevel(button, pointer, isOver) {
+    createGameMgr.createRandomGame();
 }
 function onUpFlip(button, pointer, isOver) {
-   blockMgr.FlipLastClickedBlock();
+    blockMgr.FlipLastClickedBlock();
 }
 function onUpHint(button, pointer, isOver) {
-   createGameMgr.ShowHint();
+    createGameMgr.ShowHint();
 }
