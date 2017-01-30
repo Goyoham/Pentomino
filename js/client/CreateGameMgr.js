@@ -5,7 +5,7 @@ function CreateGameMgr(){
 
 createGameMgr = new CreateGameMgr();
 
-CreateGameMgr.prototype.canvasZoom = 20;
+CreateGameMgr.prototype.canvasZoom = 60;
 CreateGameMgr.prototype.gameBoard;
 CreateGameMgr.prototype.boardOffset = {x: 0, y:0};
 CreateGameMgr.prototype.isClear = false;
@@ -13,6 +13,8 @@ CreateGameMgr.prototype.hintBlockList = '';
 CreateGameMgr.prototype.currBlockList = '';
 CreateGameMgr.prototype.hintSpriteList = [];
 CreateGameMgr.prototype.hintNum = -1;
+
+CreateGameMgr.prototype.ObjectList = [];
 
 // draw board
 CreateGameMgr.prototype.canvas;
@@ -40,10 +42,41 @@ CreateGameMgr.prototype.getRandomBoardSize = function(){
 }
 
 // functions members ------------------------------------------------------------------------------------
+CreateGameMgr.prototype.ShowGamePage = function(){
+	// back button
+	var btn_back = game.add.button(0, 0, 'btn_back', this.onUpBack, this, 0, 0, 1);
+    btn_back.scale.set(2);
+    btn_back.x = SCREEN_WIDTH - btn_back.width;
+    this.ObjectList.push(btn_back);
+
+	// create game
+	this.CreateOfficialGame();
+}
+
+CreateGameMgr.prototype.CloseGame = function(){
+	for(var i in this.ObjectList){
+        this.ObjectList[i].kill();
+    }
+    this.ObjectList = [];
+
+	blockMgr.eraseBlocks();
+	if( typeof this.canvas !== 'undefined' )
+    {
+    	this.canvas.clear();
+		this.canvasBG.clear();
+		this.canvasGrid.kill();
+    }
+}
+
+CreateGameMgr.prototype.onUpBack = function(){
+	this.CloseGame();
+	choicePage.ShowChoicePage();
+}
+
 CreateGameMgr.prototype.createGame = function(ranPattern){
 	console.log('createGame: ' + ranPattern.width + 'x'+ ranPattern.height + ' ' + ranPattern.blockList);
 	var offsetX = this.getOffsetCenter(ranPattern.width, SCREEN_WIDTH);
-	var offsetY = this.getOffsetCenter(ranPattern.height, SCREEN_HEIGHT) - 80;
+	var offsetY = this.getOffsetCenter(ranPattern.height, SCREEN_HEIGHT) - 240;
 	this.createGameBoard(ranPattern.width, ranPattern.height, offsetX, offsetY);
 
     blockMgr.eraseBlocks();
@@ -57,6 +90,12 @@ CreateGameMgr.prototype.createGame = function(ranPattern){
 CreateGameMgr.prototype.createRandomGame = function(){
 	//var size = this.getRandomBoardSize();
 	var ranPattern = patternData.getRandomPattern();
+	this.createGame(ranPattern);
+	this.isClear = false;
+}
+
+CreateGameMgr.prototype.CreateOfficialGame = function(){
+	var ranPattern = patternData.getPattern(mainPage.currGameType);
 	this.createGame(ranPattern);
 	this.isClear = false;
 }

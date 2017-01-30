@@ -1,1 +1,1 @@
-nodemon js\server.js
+nodemon js\server\server.js

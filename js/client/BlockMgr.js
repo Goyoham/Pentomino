@@ -21,8 +21,9 @@ BlockMgr.prototype.blockName = ['F', 'I', 'L', 'N', 'P', 'T', 'U', 'V', 'W', 'X'
 BlockMgr.prototype.BLOCK_CNT = 12; // kind
 BlockMgr.prototype.BLOCK_ROTATION = 4;
 BlockMgr.prototype.BLOCK_FLIP = 2; 
-BlockMgr.prototype.BLOCK_VOLUME = 5;
-BlockMgr.prototype.SIZE_ONE_BLOCK = 20;
+BlockMgr.prototype.BLOCK_VOLUME = 15;
+BlockMgr.prototype.SIZE_ONE_BLOCK = 60;
+BlockMgr.prototype.BLOCK_PADDING_TOP = 3;
 BlockMgr.prototype.blockForms;
 BlockMgr.prototype.blockForm = {
     F: [
@@ -288,7 +289,7 @@ BlockMgr.prototype.createRandomBlocks = function(num){
 BlockMgr.prototype.createBlocks = function(blockListMap){
     for (var i in blockListMap) {
         var block = this.createBlock(blockListMap[i]);
-        block.y = 320;
+        block.y = 320 * 3;
         while(this.CheckOverlappedBlock(block, this.blockList)) {
             if( block.x > SCREEN_WIDTH ){
                 block.x = 0;
@@ -305,6 +306,7 @@ BlockMgr.prototype.createBlocks = function(blockListMap){
 BlockMgr.prototype.createBlock = function(blockState) {
     // real block
     var block = game.add.sprite(0, 0, 'whole_' + blockState.type);
+    block.scale.set(3);
     if( blockState.flip === 1 )
         this._setBlockFlip(block);
     this._setBlockRotate(block, blockState.rotation);
@@ -575,7 +577,7 @@ BlockMgr.prototype.CheckOverlappedBlock = function(myBlock, blockList) {
     // log
     // check over map
     for(var keyY in myBlockPosList){
-        if( keyY < 2 || keyY >= (SCREEN_HEIGHT/blockMgr.SIZE_ONE_BLOCK) )
+        if( keyY < this.BLOCK_PADDING_TOP || keyY >= (SCREEN_HEIGHT/blockMgr.SIZE_ONE_BLOCK) )
             return true;
         for(var keyX in myBlockPosList[keyY] ){
             if( keyX < 0 || keyX >= (SCREEN_WIDTH/blockMgr.SIZE_ONE_BLOCK) )

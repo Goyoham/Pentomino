@@ -111,6 +111,22 @@ PatternData.prototype.getRandomPattern = function(){
     return randomPattern;
 }
 
+PatternData.prototype.getPattern = function(gameType){
+    var randomPattern = {};
+    var size = _getSizeFromStr(gameType);
+    console.log('gameType : ' + gameType);
+
+    var blockkeys = Object.keys(this.patterns[gameType])
+    var blockRanKey = blockkeys[blockkeys.length * Math.random() << 0];
+    
+    randomPattern.width = size.width;
+    randomPattern.height = size.height;
+    randomPattern.blockList = blockRanKey;
+    randomPattern.hint = this.makeHint(size.width, _getRandomPropertyArr(this.patterns[gameType][blockRanKey]));
+    randomPattern.blockListMap = this.makeBlockListMap(blockRanKey, randomPattern.hint);
+    return randomPattern;
+}
+
 PatternData.prototype.makeHint = function(width, blockArray){
     var result = '';
     for(var i in blockArray){

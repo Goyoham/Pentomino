@@ -1,5 +1,5 @@
-var SCREEN_WIDTH = 360;
-var SCREEN_HEIGHT = 500;
+var SCREEN_WIDTH = 1080;
+var SCREEN_HEIGHT = 1500;
 var game = new Phaser.Game(SCREEN_WIDTH, SCREEN_HEIGHT
     , Phaser.AUTO, 'Pentomino'
     , { preload: preload, create: create, update: update, render: render });
@@ -16,11 +16,20 @@ function preload() {
     }
 
     game.load.image('hintBlock', 'assets/hintBlock.png');
+
+    // buttons
     game.load.spritesheet('btn_random', 'assets/btn_random.png', 120, 39);
     game.load.spritesheet('btn_NextLevel', 'assets/btn_NextLevel.png', 120, 39);
     game.load.spritesheet('btn_SameLevel', 'assets/btn_SameLevel.png', 120, 39);
     game.load.spritesheet('btn_hint', 'assets/btn_hint.png', 60, 39);
     game.load.spritesheet('btn_flip', 'assets/btn_flip.png', 160, 39);
+
+    game.load.spritesheet('btn_board1', 'assets/btn_board1.png', 90, 90);
+    game.load.spritesheet('btn_board2', 'assets/btn_board2.png', 90, 90);    
+    game.load.spritesheet('btn_play1', 'assets/btn_play1.png', 90, 90);
+    game.load.spritesheet('btn_back', 'assets/btn_back.png', 90, 90);
+
+    // fonts
     game.load.bitmapFont('font_desyrel', 'assets/fonts/desyrel.png', 'assets/fonts/desyrel.xml');
 }
 
@@ -38,17 +47,20 @@ function create() {
     patternData.ReadData();    
     // 블럭 만들기
     blockMgr.InitBlockForms();
+
+    mainPage.ShowMainPage();
+
     // text message
-    textMessage.createText();
+    //textMessage.createText();
     // 게임 생성
-    createGameMgr.createRandomGame();
+    //createGameMgr.createRandomGame();
 
     // buttons
-    //game.add.button(0, 0, 'btn_random', onUpRandom, this, 2, 1, 0);
-    game.add.button(360-120, 0, 'btn_NextLevel', onUpNextLevel, this, 2, 1, 0);
-    game.add.button(0, 0, 'btn_SameLevel', onUpSameLevel, this, 2, 1, 0);
-    game.add.button(150, 0, 'btn_hint', onUpHint, this, 2, 1, 0);
-    //game.add.button(SCREEN_WIDTH-160, 0, 'btn_flip', onUpFlip, this, 2, 1, 0); // isFlipGame
+    // //game.add.button(0, 0, 'btn_random', onUpRandom, this, 2, 1, 0);
+    // game.add.button(360-120, 0, 'btn_NextLevel', onUpNextLevel, this, 2, 1, 0);
+    // game.add.button(0, 0, 'btn_SameLevel', onUpSameLevel, this, 2, 1, 0);
+    // game.add.button(150, 0, 'btn_hint', onUpHint, this, 2, 1, 0);
+    // //game.add.button(SCREEN_WIDTH-160, 0, 'btn_flip', onUpFlip, this, 2, 1, 0); // isFlipGame
 
 
     // 모든 경우의 수 계산
@@ -57,7 +69,7 @@ function create() {
 
 //----------------- update -----------------------------------------------------------------
 function update() {
-    textMessage.updateClearText();
+    //textMessage.updateClearText();
 }
 
 //----------------- render -----------------------------------------------------------------

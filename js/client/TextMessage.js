@@ -31,7 +31,7 @@ TextMessage.prototype.setTextMessage = function(msg){
 }
 
 TextMessage.prototype.clearTextMessage = function(){
-	this.textContent.text = '';
+	//this.textContent.text = '';
 }
 
 TextMessage.prototype.onTimerDisappear = function(){
@@ -46,5 +46,5 @@ TextMessage.prototype.updateClearText = function(){
 }
 
 TextMessage.prototype.updateHintText = function(usedHint){
-	this.texthint.text = '<Used Hint:'+usedHint+'>';
+	//this.texthint.text = '<Used Hint:'+usedHint+'>';
 }

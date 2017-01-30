@@ -6,8 +6,8 @@ var io = require('socket.io')(http);
 
 var port = 3001;
 
-app.use(express.static(__dirname + '/../'));
-app.get('/../', function(req, res){
+app.use(express.static(__dirname + '/../../'));
+app.get('/../../', function(req, res){
   res.sendFile(__dirname + 'index.html');
 });
 
