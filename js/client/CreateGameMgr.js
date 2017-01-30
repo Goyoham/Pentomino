@@ -49,11 +49,26 @@ CreateGameMgr.prototype.ShowGamePage = function(){
     btn_back.x = SCREEN_WIDTH - btn_back.width;
     this.ObjectList.push(btn_back);
 
+	// game text
+	var text = game.add.text(20, 20, mainPage.currGameType, 
+		{ font: '72px Arial', fill: '#ffffff', align: 'center'});
+	text.stroke = '#c4c4ff';
+	text.strokeThickness = 25;
+	text.setShadow(2, 2, '#333333', 2, true, true);
+	this.ObjectList.push(text);
+
+	this.CreateBtn_Hint();
+
+	// greate text manager
+	textMessage.createText();
 	// create game
 	this.CreateOfficialGame();
 }
 
 CreateGameMgr.prototype.CloseGame = function(){
+	textMessage.terminateText();
+	this.HideHint();
+
 	for(var i in this.ObjectList){
         this.ObjectList[i].kill();
     }
@@ -68,9 +83,29 @@ CreateGameMgr.prototype.CloseGame = function(){
     }
 }
 
+CreateGameMgr.prototype.CreateBtn_Hint = function(){
+	var button = game.add.button(400, 0, 'btn_hint', this.onUpHint, this, 0, 0, 1);
+	button.scale.x = 3;
+	button.scale.y = 2;
+
+	var text = game.add.text(button.x + (button.width/2), button.y + (button.height/2), 'HINT\n999', 
+		{ font: '48px Arial', fill: '#ffffff', align: 'center'});
+	text.anchor.set(0.5);
+	text.stroke = '#992255';
+	text.strokeThickness = 20;
+	text.setShadow(2, 2, '#333333', 2, true, true);
+
+	this.ObjectList.push(button);
+	this.ObjectList.push(text);
+}
+
 CreateGameMgr.prototype.onUpBack = function(){
 	this.CloseGame();
 	choicePage.ShowChoicePage();
+}
+
+CreateGameMgr.prototype.onUpHint = function() {
+    this.ShowHint();
 }
 
 CreateGameMgr.prototype.createGame = function(ranPattern){
@@ -227,6 +262,7 @@ CreateGameMgr.prototype.ShowHint = function(){
 			var offsetX = (blockMgr.SIZE_ONE_BLOCK * this.boardOffset.x) + (x * this.canvasZoom)+1;
 			var offsetY = (blockMgr.SIZE_ONE_BLOCK * this.boardOffset.y) + (y * this.canvasZoom)+1;
 			var hintBlock = game.add.sprite(offsetX, offsetY, 'hintBlock');
+			hintBlock.scale.set(3);
 			this.hintSpriteList.push(hintBlock);
 		}
 	}

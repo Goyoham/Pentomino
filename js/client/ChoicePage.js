@@ -14,7 +14,7 @@ ChoicePage.prototype.playList = [
 ChoicePage.prototype.style = { font: '64px Arial', fill: '#ffffff', align: 'center'};
 ChoicePage.prototype.ObjectList = [];
 
-ChoicePage.prototype.ShowChoicePage = function(gameType){
+ChoicePage.prototype.ShowChoicePage = function(){
     var y = 300;
     for(var i in this.playList){
         y += 300;
@@ -39,7 +39,7 @@ ChoicePage.prototype.ShowChoicePage = function(gameType){
     btn_back.x = SCREEN_WIDTH - btn_back.width;
     this.ObjectList.push(btn_back);
 
-    var text_info = game.add.text(game.world.centerX, 300, gameType+'\nOfficial : 0000 / 0000', 
+    var text_info = game.add.text(game.world.centerX, 300, mainPage.currGameType+'\nOfficial : 0000 / 0000', 
         { font: '72px Arial', fill: '#ffffff', align: 'center'});
     text_info.anchor.set(0.5);
     text_info.stroke = '#d8b356';

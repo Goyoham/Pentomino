@@ -27,7 +27,6 @@ MainPage.prototype.ShowMainPage = function(){
         var y = parseInt(i / this.CALUMN_CNT) * this.BUTTON_GAP + paddingY;
         var type = (1*i+parseInt(i / this.CALUMN_CNT)) % this.btnName.length;
         var button = game.add.button(x, y, this.btnName[type], this.onUpBoard, this, 0, 0, 1);
-        //var button = game.add.sprite(x, y, this.btnName[type]);
         button.variable = this.boardList[i];
         button.scale.set(3);
 
@@ -52,7 +51,7 @@ MainPage.prototype.CloseMainPage = function(){
 
 MainPage.prototype.onUpBoard = function(button){
     console.log('on button ' + button.variable);
-    this.CloseMainPage();
-    choicePage.ShowChoicePage(button.variable);
     this.currGameType = button.variable;
+    this.CloseMainPage();
+    choicePage.ShowChoicePage();
 }

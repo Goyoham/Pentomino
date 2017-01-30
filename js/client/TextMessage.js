@@ -10,6 +10,8 @@ TextMessage.prototype.textClear;
 TextMessage.prototype.texthint;
 TextMessage.prototype.timerDisappear;
 
+TextMessage.prototype.enabledText = false;
+
 TextMessage.prototype.createText = function(){
 	// message text
 	this.textContent = game.add.text(game.world.centerX, 80, '', { font: "20px Arial", fill: "#ff0044", align: "center" });
@@ -17,10 +19,20 @@ TextMessage.prototype.createText = function(){
     this.timerDisappear = game.time.create(false);    
 
     // clear text
-    this.textClear = game.add.bitmapText(60, 230, 'font_desyrel', '', 64);
+    this.textClear = game.add.bitmapText(60*3, 230*3, 'font_desyrel', '', 64*3);
 
 	// hint text
 	this.texthint = game.add.text(115, 40, '', { font: "20px Arial", fill: "#FFFFFF", align: "center" });
+
+	this.enabledText = true;
+}
+
+TextMessage.prototype.terminateText = function(){
+	this.enabledText = false;
+
+	this.textContent.kill();
+	this.textClear.kill();
+	this.texthint.kill();
 }
 
 TextMessage.prototype.setTextMessage = function(msg){
@@ -31,7 +43,7 @@ TextMessage.prototype.setTextMessage = function(msg){
 }
 
 TextMessage.prototype.clearTextMessage = function(){
-	//this.textContent.text = '';
+	this.textContent.text = '';
 }
 
 TextMessage.prototype.onTimerDisappear = function(){
@@ -39,6 +51,9 @@ TextMessage.prototype.onTimerDisappear = function(){
 }
 
 TextMessage.prototype.updateClearText = function(){
+	if( this.enabledText === false )
+		return;
+
 	if( createGameMgr.isClear )
    		this.textClear.text = 'CLEAR!!';
 	else
