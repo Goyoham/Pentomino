@@ -9,7 +9,7 @@ require('./PatternData.js');
 require('./ServerSocket.js');
 require('./UserData.js');
 
-var port = 3001;
+var port = 80;
 
 app.use(express.static(__dirname + '/../../'));
 app.get('/../../', function(req, res){
