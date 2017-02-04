@@ -21,7 +21,7 @@ http.listen(port, function(){
 });
 
 blockMgr.InitBlockForms();
-_patternData.ReadData();
+_patternData.Init();
 
 //io.emit('init', initData);
 io.on('connection', function(socket){	
