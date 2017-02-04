@@ -62,7 +62,7 @@ CreateGameMgr.prototype.ShowGamePage = function(){
 	// greate text manager
 	textMessage.createText();
 	// create game
-	this.CreateOfficialGame();
+	clientSocket.CreateOfficialGameReq(mainPage.currGameType);
 }
 
 CreateGameMgr.prototype.CloseGame = function(){
@@ -124,13 +124,12 @@ CreateGameMgr.prototype.createGame = function(ranPattern){
 
 CreateGameMgr.prototype.createRandomGame = function(){
 	//var size = this.getRandomBoardSize();
-	var ranPattern = patternData.getRandomPattern();
+	var ranPattern = 0;//patternData.getRandomPattern();
 	this.createGame(ranPattern);
 	this.isClear = false;
 }
 
-CreateGameMgr.prototype.CreateOfficialGame = function(){
-	var ranPattern = patternData.getPattern(mainPage.currGameType);
+CreateGameMgr.prototype.CreateOfficialGame = function(ranPattern){
 	this.createGame(ranPattern);
 	this.isClear = false;
 }
@@ -162,7 +161,10 @@ CreateGameMgr.prototype.fillGameBoardArray = function(blockList){
 	for(var i = 0; i < len; ++i){
 		this.setGameBoardArray(blockList[i]);
 	}
-	this.isClear = this.CheckFullGameBoardArray();
+	//this.isClear = this.CheckFullGameBoardArray();
+	if( this.CheckFullGameBoardArray() ){
+		clientSocket.CheckFullGameBoardArrayReq(this.gameBoard);
+	}
 }
 
 CreateGameMgr.prototype.CheckFullGameBoardArray = function(){
@@ -175,8 +177,13 @@ CreateGameMgr.prototype.CheckFullGameBoardArray = function(){
 				return false;
 		}
 	}
-	console.log('CLEAR!!' + lenX + 'x' + lenY);
+	console.log('cleared by client ' + lenX + 'x' + lenY);
 	return true;
+}
+
+CreateGameMgr.prototype.SetClearGame = function(){
+	console.log('cleared by server');
+	this.isClear = true;
 }
 
 CreateGameMgr.prototype.setGameBoardArray = function(block){

@@ -1,5 +1,6 @@
 var SCREEN_WIDTH = 1080;
 var SCREEN_HEIGHT = 1500;
+
 var game = new Phaser.Game(SCREEN_WIDTH, SCREEN_HEIGHT
     , Phaser.AUTO, 'Pentomino'
     , { preload: preload, create: create, update: update, render: render });
@@ -41,7 +42,7 @@ function create() {
     // back ground
     game.stage.backgroundColor = '#301020';    
     // 패턴 로드
-    patternData.ReadData();    
+    //patternData.ReadData();    
     // 블럭 만들기
     blockMgr.InitBlockForms();
 

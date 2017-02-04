@@ -5,10 +5,9 @@ function ChoicePage(){
 
 var choicePage = new ChoicePage();
 
-ChoicePage.prototype.btnName = ['btn_play1', 'btn_play1', 'btn_play1'];
+ChoicePage.prototype.btnName = ['btn_play1', 'btn_play1'];
 ChoicePage.prototype.playList = [
     'Play Official Game', 
-    'Play Cleared Game', 
     'Play Hard Mode'
     ];
 ChoicePage.prototype.style = { font: '64px Arial', fill: '#ffffff', align: 'center'};
@@ -39,11 +38,12 @@ ChoicePage.prototype.ShowChoicePage = function(){
     btn_back.x = SCREEN_WIDTH - btn_back.width;
     this.ObjectList.push(btn_back);
 
-    var text_info = game.add.text(game.world.centerX, 300, mainPage.currGameType+'\nOfficial : 0000 / 0000', 
+    var clearData = clientData.GetMyClearDataStr(mainPage.currGameType, true);
+    var text_info = game.add.text(game.world.centerX, 300, mainPage.currGameType+'\nOfficial : '+clearData, 
         { font: '72px Arial', fill: '#ffffff', align: 'center'});
     text_info.anchor.set(0.5);
     text_info.stroke = '#d8b356';
-    text_info.strokeThickness = 25;
+    text_info.strokeThickness = 40;
     text_info.setShadow(2, 2, '#333333', 2, true, true);
     this.ObjectList.push(text_info);
 }
@@ -56,7 +56,6 @@ ChoicePage.prototype.CloseChoicePage = function(){
 }
 
 ChoicePage.prototype.onUpButton = function(button){
-    console.log(button.variable);
     switch( button.variable )
     {
         case 0:            
@@ -64,11 +63,8 @@ ChoicePage.prototype.onUpButton = function(button){
             this.CloseChoicePage();
             createGameMgr.ShowGamePage();
         break;
-        case 1:
-            // play cleared game
-        return;
 
-        case 2:
+        case 1:
             // play hard mode
         return;
     }

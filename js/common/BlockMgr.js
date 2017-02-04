@@ -1,14 +1,6 @@
 // block manager
-function BlockMgr(){
-    // members
-    /*
-    var shadowBlock = 0; // following block like a shadow
-    var dragMovement = 0;
-    var blockList = [];
-    */
-};
-
-var blockMgr = new BlockMgr();
+function BlockMgr(){}
+blockMgr = new BlockMgr();
 
 // members ------------------------------------------------------------------------------------
 BlockMgr.prototype.shadowBlock = 0; // following block like a shadow

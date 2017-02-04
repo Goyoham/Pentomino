@@ -30,7 +30,8 @@ MainPage.prototype.ShowMainPage = function(){
         button.variable = this.boardList[i];
         button.scale.set(3);
 
-        var text = game.add.text(x+(this.BUTTON_GAP/2), y+(this.BUTTON_GAP/2), button.variable+'\n0000/0000', this.style);
+        var clearData = clientData.GetMyClearDataStr(button.variable);
+        var text = game.add.text(x+(this.BUTTON_GAP/2), y+(this.BUTTON_GAP/2), button.variable+'\n'+clearData, this.style);
         text.anchor.set(0.5);
         text.stroke = '#c4c4ff';
         text.strokeThickness = 25;
@@ -40,6 +41,13 @@ MainPage.prototype.ShowMainPage = function(){
         this.ObjectList.push(text);
     }
 
+    // total
+    var clearData = clientData.GetMyClearDataStr(0, true);
+    var text = game.add.text(100, paddingY - 100, 'total : '+clearData, this.style);
+    text.stroke = '#ccc4cc';
+    text.strokeThickness = 25;
+    text.setShadow(2, 2, '#333333', 2, true, true);
+    this.ObjectList.push(text);
 }
 
 MainPage.prototype.CloseMainPage = function(){
