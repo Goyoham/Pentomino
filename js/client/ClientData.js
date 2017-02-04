@@ -63,5 +63,5 @@ ClientData.prototype.GetPercentMyClearDataStr = function(size){
     var totalNum = clientData.GetNumOfPattern(size);
     if( totalNum === 0 )
         return 'err/0';
-    return ' (' +(clearedNum / totalNum).toFixed(4) * 100 + '%)';
+    return ' (' +(clearedNum / totalNum * 100).toFixed(2) + '%)';
 }
