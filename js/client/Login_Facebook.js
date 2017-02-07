@@ -1,0 +1,41 @@
+
+window.fbAsyncInit = function() {
+    FB.init({
+    appId      : '1780322648960716',
+    cookie     : true,
+    xfbml      : true,
+    version    : 'v2.8'
+    });
+    FB.AppEvents.logPageView();   
+};
+
+(function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_KR/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+function Login_Facebook() {}
+var _login_Facebook = new Login_Facebook();
+
+function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+        _login_Facebook.statusChangeCallback(response);
+    });
+}
+
+Login_Facebook.prototype.statusChangeCallback = function(response){
+    if( response.status === 'connected' ){
+        console.log('logined from facebook');
+        console.log(response);
+        FB.api('/me', function(response2) {
+            console.log(response2);
+        });
+        clientSocket.ReverifyLogin_Facebook(response);
+    }
+    else {
+        console.log('status : ' + response.status);
+    }
+}

@@ -1,9 +1,20 @@
 <!doctype html>
 <html>
     <head>
+        <!-- Google Login
         <meta name="google-signin-scope" content="profile email">
         <meta name="google-signin-client_id" content="28649472276-lroq0gl86ov0mji7ift0m76phi9rsdnl.apps.googleusercontent.com">
         <script src="https://apis.google.com/js/platform.js" async defer></script>
+        -->
+
+        <!-- Google Adsense -->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-6022365664403380",
+            enable_page_level_ads: true
+        });
+        </script>
 
 	    <style type="text/css">
 			body{
@@ -11,9 +22,6 @@
 				padding:0px;
 				margin:0px;
 			}
-            div#g-login{
-                float:left;
-            }
             dif#f-login{
                 float:left;
             }
@@ -33,9 +41,10 @@
         <script src="js/client/game.js"></script>
         <script src="js/client/ClientSocket.js"></script>
         <script src="js/client/ClientData.js"></script>
+        <script src="js/client/Login_Facebook.js"></script>
     </head>
     <body>
-        <!-- Google Login -->
+        <!-- Google Login 
         <div id="g-login" class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
         <script>
             function onSignIn(googleUser) {
@@ -53,7 +62,7 @@
                 console.log("ID Token: " + id_token);
             };
         </script>
-        
+        -->
         <!-- Facebook Login -->
         <div id="fb-root"></div>
         <div id="f-login" 
@@ -65,35 +74,6 @@
             scope="public_profile,email"
             onlogin="checkLoginState();"
         ></div>
-        <script>
-            window.fbAsyncInit = function() {
-                FB.init({
-                appId      : '1780322648960716',
-                cookie     : true,
-                xfbml      : true,
-                version    : 'v2.8'
-                });
-                FB.AppEvents.logPageView();   
-            };
-
-            (function(d, s, id){
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) {return;}
-                js = d.createElement(s); js.id = id;
-                js.src = "//connect.facebook.net/en_KR/sdk.js";
-                fjs.parentNode.insertBefore(js, fjs);
-            }(document, 'script', 'facebook-jssdk'));
-            
-            function checkLoginState() {
-                FB.getLoginStatus(function(response) {
-                    statusChangeCallback(response);
-                });
-            }
-
-            function statusChangeCallback(response){
-                console.log(response);
-            }
-        </script>
     </body>
 </html>
 

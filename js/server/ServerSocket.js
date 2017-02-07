@@ -20,6 +20,22 @@ ServerSocket.prototype.SendInit = function(){
 ServerSocket.prototype.OnPacket = function(){
     var socket = this.socket;
     var userData = this.userData;
+    
+    var _ReverifyLoginCallback_Facebook = this.ReverifyLoginCallback_Facebook;
+    this.socket.on('reverify_login_from_facebook_req', function(data){        
+        var options = {
+            host: 'graph.facebook.com',
+            port: 443,
+            path: '/debug_token?input_token='+data.authResponse.accessToken+'&access_token=1780322648960716|ed92ed7c67d4e91992b7911c3f356c57',
+            //path: '/oauth/access_token?client_id=1780322648960716&client_secret=ed92ed7c67d4e91992b7911c3f356c57&grant_type=client_credentials',
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        _webRequest.getJSON(options, _ReverifyLoginCallback_Facebook, socket);
+    });
+
     this.socket.on('get_game_pattern_req', function(data){
 		var ack = {};
         ack.ranPattern = userData.GetOfficialPattern(data.gameType);
@@ -39,4 +55,11 @@ ServerSocket.prototype.OnPacket = function(){
     this.socket.on('disconnect', function(){
 		console.log('disconnect');
 	});	
+}
+
+ServerSocket.prototype.ReverifyLoginCallback_Facebook = function(result, socket){
+    var ack = {};
+    console.log(result);
+    ack.result = result;
+    socket.emit('reverify_login_from_facebook_ack', ack);
 }

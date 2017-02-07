@@ -30,3 +30,11 @@ socket.on('verify_cleared_game_ack', function(data){
     createGameMgr.SetClearGame();
     clientData.SetClearedNumOfPattern(data.clearedData.sizeStr, data.clearedData.clearedNum);
 });
+
+ClientSocket.prototype.ReverifyLogin_Facebook = function(response){
+    socket.emit('reverify_login_from_facebook_req', response);
+}
+
+socket.on('reverify_login_from_facebook_ack', function(data){
+    console.log(data);
+});

@@ -20,6 +20,8 @@ MainPage.prototype.ObjectList = [];
 MainPage.prototype.currGameType = '';
 
 MainPage.prototype.ShowMainPage = function(){
+    checkLoginState(); // check login from facebook
+
     this.ObjectList = [];
     var paddingY = 200;
     for( var i in this.boardList){

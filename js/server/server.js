@@ -8,6 +8,8 @@ require('../common/BlockMgr.js');
 require('./PatternData.js');
 require('./ServerSocket.js');
 require('./UserData.js');
+require('./DBManager.js');
+_webRequest = require('./WebRequest.js');
 
 var port = 80;
 
@@ -22,6 +24,7 @@ http.listen(port, function(){
 
 blockMgr.InitBlockForms();
 _patternData.Init();
+_dbManager.Init();
 
 //io.emit('init', initData);
 io.on('connection', function(socket){	
@@ -30,5 +33,5 @@ io.on('connection', function(socket){
 	console.log('id:'+userSession.userData.GetID());
 
 	userSession.SendInit();	
-	userSession.OnPacket();
+	userSession.OnPacket();	
 });
