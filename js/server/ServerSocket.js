@@ -88,6 +88,8 @@ exports.OnPacket = function(socket){
     socket.on('get_game_pattern_req', function(data){
         console.log('get_game_pattern_req');
         var userData = _serverSocket.GetUserData(socket.id);
+        if( typeof userData === 'undefined')
+            return;
 		var ack = {};
         ack.ranPattern = userData.GetOfficialPattern(data.gameType);
         userData.SetPlayingPattern(ack.ranPattern);
@@ -97,6 +99,8 @@ exports.OnPacket = function(socket){
     socket.on('verify_cleared_game_req', function(data){
         console.log('verify_cleared_game_req');
         var userData = _serverSocket.GetUserData(socket.id);
+        if( typeof userData === 'undefined')
+            return;
         var ack = {};
         ack.isClear = true;
         if( ack.isClear ){
@@ -112,6 +116,8 @@ exports.ReverifyLoginCallback_Facebook = function(result, socket){
     console.log(result);
     var id = result.data.user_id;
     var userData = _serverSocket.GetUserData(socket.id);
+    if( typeof userData === 'undefined')
+            return;
     ack.ok = userData.GetVerifyingID() === id ? 1 : 0
     ack.result = result; // should delete
     socket.emit('reverify_login_from_facebook_ack', ack);

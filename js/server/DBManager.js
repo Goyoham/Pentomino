@@ -5,7 +5,7 @@ mongoose.Promise = global.Promise;
 var UserDBData;
 exports.db;
 exports.Init = function(){
-    mongoose.connect('mongodb://localhost/test');
+    mongoose.connect('mongodb://localhost/Pentomino888');
     this.db = mongoose.connection;
     this.db.on('error', console.error.bind(console, 'db connection error:'));
     this.db.once('open', function callback (){

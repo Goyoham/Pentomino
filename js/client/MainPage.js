@@ -23,7 +23,7 @@ MainPage.prototype.ShowMainPage = function(){
     console.log('show main page');
 
     this.ObjectList = [];
-    var paddingY = 200;
+    var paddingY = 290;
     for( var i in this.boardList){
         var x = (i % this.CALUMN_CNT) * this.BUTTON_GAP;
         var y = parseInt(i / this.CALUMN_CNT) * this.BUTTON_GAP + paddingY;
@@ -43,13 +43,35 @@ MainPage.prototype.ShowMainPage = function(){
         this.ObjectList.push(text);
     }
 
+    // title
+    {
+        var clearData = clientData.GetMyClearDataStr(0, true);
+        var text = game.add.text(50, paddingY - 250, 'Pentomino888', 
+            { font: '96px Arial', fill: '#ffffff', align: 'center'});
+        text.stroke = '#FFB2FB';
+        text.strokeThickness = 25;
+        text.setShadow(2, 2, '#333333', 2, true, true);
+        this.ObjectList.push(text);
+    }
+
     // total
-    var clearData = clientData.GetMyClearDataStr(0, true);
-    var text = game.add.text(100, paddingY - 100, 'total : '+clearData, this.style);
-    text.stroke = '#ccc4cc';
-    text.strokeThickness = 25;
-    text.setShadow(2, 2, '#333333', 2, true, true);
-    this.ObjectList.push(text);
+    {
+        var clearData = clientData.GetMyClearDataStr(0, true);
+        var text = game.add.text(100, paddingY - 100, 'total : '+clearData, this.style);
+        text.stroke = '#ccc4cc';
+        text.strokeThickness = 25;
+        text.setShadow(2, 2, '#333333', 2, true, true);
+        this.ObjectList.push(text);
+    }
+
+    // login / logout
+    {
+        var btnName = _login_Facebook.isLogin ? 'btn_logout_fb' : 'btn_login_fb';
+        var button = game.add.button(0, paddingY-90, btnName, this.onLogin_fb, this, 0, 0, 1);
+        button.scale.set(2);
+        button.x = SCREEN_WIDTH - button.width - 10;
+        this.ObjectList.push(button);
+    }
 }
 
 MainPage.prototype.CloseMainPage = function(){
@@ -65,4 +87,22 @@ MainPage.prototype.onUpBoard = function(button){
     this.currGameType = button.variable;
     this.CloseMainPage();
     choicePage.ShowChoicePage();
+}
+
+MainPage.prototype.onLogin_fb = function(){
+    FB.api('/me', function(response) {
+        console.log(JSON.stringify(response));
+    });
+    if( _login_Facebook.isLogin ){
+        console.log('on click logout');
+        FB.logout(function(response){
+            _login_Facebook.statusChangeCallback(response);
+        });
+    }
+    else{
+        console.log('on click login');
+        FB.login(function(response){
+            _login_Facebook.statusChangeCallback(response);
+        });
+    }
 }

@@ -81,18 +81,17 @@ UserData.prototype.onLoadDataResult = function(dbData){
         return;
     }
     // 4-2. 기존 유저면, 새 유저 데이터 삭제하고, 로그인 계정 데이터 사용
-    console.log(dbData);
     this.clearedPatterns = {}; // CLEAR
     var len = dbData[0].clearedData.length;
+    console.log('load data length : ' + len);
     for(var i = 0; i < len; ++i){
         var data = dbData[0].clearedData[i];
-        console.log(i);
         this.AddClearedPattern(data.size, data.pattern);
     }
     _serverSocket.SendLoginClearedPattern(this.socketID, this.GetClearedNumOfPattern());
 }
 
-UserData.prototype.UpdateDB_UnknownUserClearedPattern = function(){
+UserData.prototype.UpdateDB_UnknownUserClearedPatterns = function(){
     for(var sizeStr in this.clearedPatterns){
         for(var i in this.clearedPatterns[sizeStr]){
             _dbManager.UpdateClaredGame(this.GetKey(), sizeStr, this.clearedPatterns[sizeStr][i]);
@@ -144,7 +143,7 @@ UserData.prototype.AddClearedPattern = function(sizeStr, pattern){
     }
 
     this.clearedPatterns[sizeStr].add(pattern);
-    console.log('add '+ sizeStr + ' ' + pattern);
+    //console.log('add '+ sizeStr + ' ' + pattern);
     return true;
 }
 
