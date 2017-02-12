@@ -13,9 +13,9 @@ exports.Init = function(){
     })
 
     var userDBDataSchema = mongoose.Schema({
-        loginKey: String,
+        _id: String, //loginKey
         loginType: Number,
-        clearedData: [{ size: String, pattern: String}]
+        clearedData: [{ size: String, _id: String }]
     });
 
     UserDBData = mongoose.model('UserDBData', userDBDataSchema);
@@ -23,7 +23,7 @@ exports.Init = function(){
 
 exports.FindUserData = function(userData_, findOnly_){
     console.log('find data type: ' + userData_.GetLoginType() + ' key: '+ userData_.GetKey());
-    UserDBData.find({loginKey: userData_.GetKey()},function(err, data){
+    UserDBData.find({_id: userData_.GetKey()},function(err, data){
         if(err) return console.error(err);
         if( findOnly_ )
             return;
@@ -33,7 +33,7 @@ exports.FindUserData = function(userData_, findOnly_){
 
 exports.CreateNewUserData = function(userData_){
     console.log('create new data type: ' + userData_.GetLoginType() + ' key: '+ userData_.GetKey());
-    var saveData = new UserDBData({ loginType: userData_.GetLoginType(), loginKey: userData_.GetKey() });
+    var saveData = new UserDBData({ loginType: userData_.GetLoginType(), _id: userData_.GetKey() });
     saveData.save(function(err){
         if (err) console.log(err);
     });
@@ -43,8 +43,8 @@ exports.CreateNewUserData = function(userData_){
 exports.UpdateClaredGame = function(loginKey_, sizeStr, pattern){
     console.log('update data key: ' + loginKey_ + ' sizeStr: '+ sizeStr + ' pattern: ' + pattern);
     UserDBData.update(
-        { loginKey: loginKey_ },
-        { $push: { clearedData: { size: sizeStr, pattern: pattern } } },
+        { _id: loginKey_ },
+        { $push: { clearedData: { size: sizeStr, _id: pattern } } },
         function(err){
         if (err) console.log(err);
     });

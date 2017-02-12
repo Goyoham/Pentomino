@@ -74,6 +74,7 @@ UserData.prototype.LoadGameDataFromDB = function(){
 UserData.prototype.onLoadDataResult = function(dbData){
     console.log('Login User Key:'+this.GetKey() + ' dataLen:' + dbData.length);
     // 4-1. 신규 유저면, 새 유저 데이터를 로그인 계정 데이터에 덮어쓰기 (db저장)
+    console.log(dbData);
     if( dbData.length === 0 ){
         _dbManager.CreateNewUserData(this);
         this.UpdateDB_UnknownUserClearedPatterns();
@@ -86,7 +87,7 @@ UserData.prototype.onLoadDataResult = function(dbData){
     console.log('load data length : ' + len);
     for(var i = 0; i < len; ++i){
         var data = dbData[0].clearedData[i];
-        this.AddClearedPattern(data.size, data.pattern);
+        this.AddClearedPattern(data.size, data._id);
     }
     _serverSocket.SendLoginClearedPattern(this.socketID, this.GetClearedNumOfPattern());
 }

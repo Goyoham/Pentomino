@@ -61,10 +61,12 @@ exports.OnPacket = function(socket){
         var userData = _serverSocket.GetUserData(socket.id);
         userData.SetVerifyingID(data.authResponse.userID);
         console.log('login req vid: ' + userData.GetVerifyingID());
+        //var accessToken = '1780322648960716|ed92ed7c67d4e91992b7911c3f356c57'; // service
+        var accessToken = '1784544075205240|48af0226ba68670e07014b92aa6ef543'; // test
         var options = {
             host: 'graph.facebook.com',
             port: 443,
-            path: '/debug_token?input_token='+data.authResponse.accessToken+'&access_token=1780322648960716|ed92ed7c67d4e91992b7911c3f356c57',
+            path: '/debug_token?input_token='+data.authResponse.accessToken+'&access_token='+accessToken,
             //path: '/oauth/access_token?client_id=1780322648960716&client_secret=ed92ed7c67d4e91992b7911c3f356c57&grant_type=client_credentials',
             method: 'GET',
             headers: {
