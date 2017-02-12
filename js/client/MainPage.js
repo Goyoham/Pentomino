@@ -4,6 +4,7 @@ function MainPage(){};
 var mainPage = new MainPage();
 
 MainPage.prototype.BUTTON_GAP = 270;
+MainPage.prototype.PADDING_Y = 340;
 MainPage.prototype.CALUMN_CNT = 4;
 MainPage.prototype.btnName = ['btn_board1', 'btn_board2'];
 MainPage.prototype.boardList = [
@@ -15,6 +16,7 @@ MainPage.prototype.boardList = [
 
 MainPage.prototype.style = { font: '48px Arial', fill: '#ffffff', align: 'center'};
 MainPage.prototype.ObjectList = [];
+MainPage.prototype.ObjectLogin = [];
 MainPage.prototype.currGameType = '';
 MainPage.prototype.ready = false;
 
@@ -23,10 +25,9 @@ MainPage.prototype.ShowMainPage = function(){
     console.log('show main page');
 
     this.ObjectList = [];
-    var paddingY = 290;
     for( var i in this.boardList){
         var x = (i % this.CALUMN_CNT) * this.BUTTON_GAP;
-        var y = parseInt(i / this.CALUMN_CNT) * this.BUTTON_GAP + paddingY;
+        var y = parseInt(i / this.CALUMN_CNT) * this.BUTTON_GAP + this.PADDING_Y;
         var type = (1*i+parseInt(i / this.CALUMN_CNT)) % this.btnName.length;
         var button = game.add.button(x, y, this.btnName[type], this.onUpBoard, this, 0, 0, 1);
         button.variable = this.boardList[i];
@@ -46,7 +47,7 @@ MainPage.prototype.ShowMainPage = function(){
     // title
     {
         var clearData = clientData.GetMyClearDataStr(0, true);
-        var text = game.add.text(50, paddingY - 250, 'Pentomino888', 
+        var text = game.add.text(50, this.PADDING_Y - 300, 'Pentomino888', 
             { font: '96px Arial', fill: '#ffffff', align: 'center'});
         text.stroke = '#FFB2FB';
         text.strokeThickness = 25;
@@ -57,7 +58,7 @@ MainPage.prototype.ShowMainPage = function(){
     // total
     {
         var clearData = clientData.GetMyClearDataStr(0, true);
-        var text = game.add.text(100, paddingY - 100, 'Total : '+clearData, this.style);
+        var text = game.add.text(100, this.PADDING_Y - 170, 'Total : '+clearData, this.style);
         text.stroke = '#6AD8C4';
         text.strokeThickness = 30;
         text.setShadow(2, 2, '#333333', 2, true, true);
@@ -67,19 +68,42 @@ MainPage.prototype.ShowMainPage = function(){
     // login / logout
     {
         var btnName = _login_Facebook.isLogin ? 'btn_logout_fb' : 'btn_login_fb';
-        var button = game.add.button(0, paddingY-90, btnName, this.onLogin_fb, this, 0, 0, 1);
+        var button = game.add.button(0, this.PADDING_Y-90, btnName, this.onLogin_fb, this, 0, 0, 1);
         button.scale.set(2);
         button.x = SCREEN_WIDTH - button.width - 10;
         this.ObjectList.push(button);
     }
+
+    this.SetLoginUserData();
 }
 
 MainPage.prototype.CloseMainPage = function(){
     console.log('CloseMainPage');
+    this.RemoveLoginUserData();
     for(var i in this.ObjectList){
         this.ObjectList[i].kill();
-    }
+    }    
     this.ObjectList = [];
+}
+
+MainPage.prototype.SetLoginUserData = function(){
+    this.RemoveLoginUserData();
+    console.log('n:'+_login_Facebook.name);
+    var clearData = clientData.GetMyClearDataStr(0, true);
+    var text = game.add.text(20, this.PADDING_Y - 80, 'Welcome! '+_login_Facebook.name+'!', 
+        { font: '36px Arial', fill: '#ffffff', align: 'center'});
+    text.x = SCREEN_WIDTH/2 - text.width/2 - 190;
+    text.stroke = '#728AFF';
+    text.strokeThickness = 25;
+    text.setShadow(2, 2, '#333333', 2, true, true);
+    this.ObjectLogin.push(text);
+}
+
+MainPage.prototype.RemoveLoginUserData = function(){
+    for(var i in this.ObjectLogin){
+        this.ObjectLogin[i].kill();
+    }
+    this.ObjectLogin = [];
 }
 
 MainPage.prototype.onUpBoard = function(button){

@@ -34,12 +34,15 @@ function checkLoginState() {
 }
 
 Login_Facebook.prototype.isLogin = false;
+Login_Facebook.prototype.name = '';
 Login_Facebook.prototype.statusChangeCallback = function(response){
     if( response.status === 'connected' ){
         console.log('logined from facebook');
         console.log(response);
         FB.api('/me', function(response2) {
-            console.log(response2);
+            _login_Facebook.name = response2.name;
+            console.log('name:'+name);
+            mainPage.SetLoginUserData();
         });
         clientSocket.ReverifyLogin_Facebook(response);
         this.isLogin = true;
@@ -47,5 +50,7 @@ Login_Facebook.prototype.statusChangeCallback = function(response){
     else {
         clientSocket.LoginOut_Facebook();
         this.isLogin = false;
+        _login_Facebook.name = '';
+        mainPage.RemoveLoginUserData();
     }
 }
