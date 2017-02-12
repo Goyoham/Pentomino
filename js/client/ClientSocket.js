@@ -6,6 +6,15 @@ var socket = io();
 socket.on('connected', function(data){
     console.log('connected to server');
     clientData.InitData(data);
+    checkLoginState();
+});
+
+socket.on('login_cleared_pattern_not', function(data){
+    console.log('got login data');
+    clientData.InitClearedData(data);
+    if( mainPage.ready ){
+        mainPage.ShowMainPage();
+    }
 });
 
 ClientSocket.prototype.CreateOfficialGameReq = function(gameType){
@@ -34,7 +43,13 @@ socket.on('verify_cleared_game_ack', function(data){
 ClientSocket.prototype.ReverifyLogin_Facebook = function(response){
     socket.emit('reverify_login_from_facebook_req', response);
 }
-
 socket.on('reverify_login_from_facebook_ack', function(data){
+    console.log(data);
+});
+
+ClientSocket.prototype.LoginOut_Facebook = function(){
+    socket.emit('loginout_from_facebook_req', {});
+}
+socket.on('loginout_from_facebook_ack', function(data){
     console.log(data);
 });

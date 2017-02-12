@@ -1,7 +1,5 @@
 
-function MainPage(){
-
-};
+function MainPage(){};
 
 var mainPage = new MainPage();
 
@@ -18,9 +16,11 @@ MainPage.prototype.boardList = [
 MainPage.prototype.style = { font: '48px Arial', fill: '#ffffff', align: 'center'};
 MainPage.prototype.ObjectList = [];
 MainPage.prototype.currGameType = '';
+MainPage.prototype.ready = false;
 
 MainPage.prototype.ShowMainPage = function(){
-    checkLoginState(); // check login from facebook
+    this.CloseMainPage();
+    console.log('show main page');
 
     this.ObjectList = [];
     var paddingY = 200;
@@ -53,6 +53,7 @@ MainPage.prototype.ShowMainPage = function(){
 }
 
 MainPage.prototype.CloseMainPage = function(){
+    console.log('CloseMainPage');
     for(var i in this.ObjectList){
         this.ObjectList[i].kill();
     }

@@ -15,7 +15,13 @@ ClientData.prototype.InitData = function(data){
         this.ClearedNumOfPattern[i] = 0;
     }
     console.log('TotalNumOfPattern : ' + this.TotalNumOfPattern);
+}
 
+ClientData.prototype.InitClearedData = function(data){
+    this.ClearedNumOfPattern = {};
+    for(var i in data.clearedNumOfPattern_){
+        this.SetClearedNumOfPattern(i, data.clearedNumOfPattern_[i]);
+    }
 }
 
 ClientData.prototype.GetNumOfPattern = function(size){

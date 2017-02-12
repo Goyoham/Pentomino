@@ -47,7 +47,7 @@ function create() {
     blockMgr.InitBlockForms();
 
     mainPage.ShowMainPage();
-
+    mainPage.ready = true;
     // text message
     //textMessage.createText();
     // 게임 생성

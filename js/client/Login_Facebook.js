@@ -6,7 +6,9 @@ window.fbAsyncInit = function() {
     xfbml      : true,
     version    : 'v2.8'
     });
-    FB.AppEvents.logPageView();   
+    FB.AppEvents.logPageView();
+    console.log('fb');
+    checkLoginState();
 };
 
 (function(d, s, id){
@@ -21,6 +23,11 @@ function Login_Facebook() {}
 var _login_Facebook = new Login_Facebook();
 
 function checkLoginState() {
+    if( typeof FB === 'undefined' ){
+        console.log('FB is undefined');
+        return;
+    }
+    console.log('check facebook login state');
     FB.getLoginStatus(function(response) {
         _login_Facebook.statusChangeCallback(response);
     });
@@ -36,6 +43,6 @@ Login_Facebook.prototype.statusChangeCallback = function(response){
         clientSocket.ReverifyLogin_Facebook(response);
     }
     else {
-        console.log('status : ' + response.status);
+        clientSocket.LoginOut_Facebook();
     }
 }
