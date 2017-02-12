@@ -58,7 +58,7 @@ MainPage.prototype.ShowMainPage = function(){
     // total
     {
         var clearData = clientData.GetMyClearDataStr(0, true);
-        var text = game.add.text(100, this.PADDING_Y - 170, 'Total : '+clearData, this.style);
+        var text = game.add.text(53, this.PADDING_Y - 170, 'Total : '+clearData, this.style);
         text.stroke = '#6AD8C4';
         text.strokeThickness = 30;
         text.setShadow(2, 2, '#333333', 2, true, true);
@@ -90,9 +90,9 @@ MainPage.prototype.SetLoginUserData = function(){
     this.RemoveLoginUserData();
     console.log('n:'+_login_Facebook.name);
     var clearData = clientData.GetMyClearDataStr(0, true);
-    var text = game.add.text(20, this.PADDING_Y - 80, 'Welcome! '+_login_Facebook.name+'!', 
+    var text = game.add.text(55, this.PADDING_Y - 80, 'Welcome! '+_login_Facebook.name+'!', 
         { font: '36px Arial', fill: '#ffffff', align: 'center'});
-    text.x = SCREEN_WIDTH/2 - text.width/2 - 190;
+    //text.x = SCREEN_WIDTH/2 - text.width/2 - 190;
     text.stroke = '#728AFF';
     text.strokeThickness = 25;
     text.setShadow(2, 2, '#333333', 2, true, true);
