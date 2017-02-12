@@ -35,7 +35,7 @@ MainPage.prototype.ShowMainPage = function(){
         var clearData = clientData.GetMyClearDataStr(button.variable);
         var text = game.add.text(x+(this.BUTTON_GAP/2), y+(this.BUTTON_GAP/2), button.variable+'\n'+clearData, this.style);
         text.anchor.set(0.5);
-        text.stroke = '#c4c4ff';
+        text.stroke = !clientData.IsAllCleared(button.variable) ? '#c4c4ff' : '#FF565C';
         text.strokeThickness = 25;
         text.setShadow(2, 2, '#333333', 2, true, true);
 
@@ -57,9 +57,9 @@ MainPage.prototype.ShowMainPage = function(){
     // total
     {
         var clearData = clientData.GetMyClearDataStr(0, true);
-        var text = game.add.text(100, paddingY - 100, 'total : '+clearData, this.style);
-        text.stroke = '#ccc4cc';
-        text.strokeThickness = 25;
+        var text = game.add.text(100, paddingY - 100, 'Total : '+clearData, this.style);
+        text.stroke = '#6AD8C4';
+        text.strokeThickness = 30;
         text.setShadow(2, 2, '#333333', 2, true, true);
         this.ObjectList.push(text);
     }
