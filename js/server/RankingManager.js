@@ -11,6 +11,10 @@ exports.InitRanking = function(dbData){
     }
     var len = dbData.length;
     for(var i = 0; i < len; ++i){
+        if( typeof dbData[i].TotalClearedNum === 'undefined' )
+            dbData[i].TotalClearedNum = 0;
+        if( typeof dbData[i].name === 'undefined' )
+            dbData[i].name = 'unknown';
         this.rankingOrderList.push(dbData[i]);
     }
     this.SortRanking(true);

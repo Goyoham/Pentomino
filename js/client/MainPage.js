@@ -59,7 +59,7 @@ MainPage.prototype.ShowMainPage = function(){
         var clearData = clientData.GetMyClearDataStr(0, true);
         var ranking = '';
         if( clientData.MyRanking > 0 ){
-            ranking = '   Ranking: '+clientData.MyRanking;
+            ranking = '   Rank: '+clientData.MyRanking;
         }            
         var text = game.add.text(53, this.PADDING_Y - 180, 'Total : ' + clearData + ranking, this.style);
         text.stroke = '#6AD8C4';
