@@ -99,4 +99,4 @@ YZVVV_YZZZV_YYWZV_YWWPP_WWPPP
 numSize : 1
 numBlockList : 26
 numPatterns : 70
-elapsedTime : 0.015
+elapsedTime : 0.016

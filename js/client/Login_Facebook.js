@@ -43,6 +43,7 @@ Login_Facebook.prototype.statusChangeCallback = function(response){
             _login_Facebook.name = response2.name;
             console.log('name:'+name);
             mainPage.SetLoginUserData();
+            clientSocket.SendLoginedUserInfoNot(response2);
         });
         clientSocket.ReverifyLogin_Facebook(response);
         this.isLogin = true;

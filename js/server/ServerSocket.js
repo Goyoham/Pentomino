@@ -57,10 +57,10 @@ exports.SendInit = function(socket){
 
 exports.OnPacket = function(socket){    
     socket.on('reverify_login_from_facebook_req', function(data){
-        console.log('reverify_login_from_facebook_req');
         var userData = _serverSocket.GetUserData(socket.id);
         userData.SetVerifyingID(data.authResponse.userID);
         console.log('login req vid: ' + userData.GetVerifyingID());
+        console.log('name:'+data.name);
         var options = {
             host: 'graph.facebook.com',
             port: 443,
@@ -74,8 +74,13 @@ exports.OnPacket = function(socket){
         _webRequest.getJSON(options, _serverSocket.ReverifyLoginCallback_Facebook, socket);
     });
 
+    socket.on('logined_user_info_not', function(data){
+        console.log('*loginedName: '+data.name);
+        var userData = _serverSocket.GetUserData(socket.id);
+        userData.userInfo = data;
+	});
+
     socket.on('loginout_from_facebook_req', function(data){
-        console.log('loginout_from_facebook_req');
         var userData = _serverSocket.GetUserData(socket.id);
         if( typeof userData === 'undefined')
             return;
@@ -83,10 +88,9 @@ exports.OnPacket = function(socket){
 		var ack = {};
         userData.Logout();
         socket.emit('loginout_from_facebook_ack', ack);
-	});	
+	});
 
     socket.on('get_game_pattern_req', function(data){
-        console.log('get_game_pattern_req');
         var userData = _serverSocket.GetUserData(socket.id);
         if( typeof userData === 'undefined')
             return;
@@ -94,10 +98,9 @@ exports.OnPacket = function(socket){
         ack.ranPattern = userData.GetOfficialPattern(data.gameType);
         userData.SetPlayingPattern(ack.ranPattern);
         socket.emit('get_game_pattern_ack', ack);
-	});	
+	});
 
     socket.on('verify_cleared_game_req', function(data){
-        console.log('verify_cleared_game_req');
         var userData = _serverSocket.GetUserData(socket.id);
         if( typeof userData === 'undefined')
             return;
@@ -108,7 +111,17 @@ exports.OnPacket = function(socket){
             ack.clearedData = userData.ClearPlayingPattern();
         }
         socket.emit('verify_cleared_game_ack', ack);
-	});	
+	});
+
+    socket.on('get_ranking_list_by_page_req', function(data){
+        var userData = _serverSocket.GetUserData(socket.id);
+        if( typeof userData === 'undefined')
+            return;
+        
+        var ack = {};
+        ack.rankingList = _rankingManager.GetRankingListByPage(data.page);
+        socket.emit('get_ranking_list_by_page_ack', ack);
+	});
 }
 
 exports.ReverifyLoginCallback_Facebook = function(result, socket){
@@ -131,10 +144,22 @@ exports.ReverifyLoginCallback_Facebook = function(result, socket){
     }
 }
 
-exports.SendLoginClearedPattern = function(socketID, clearedNumOfPattern_){
+exports.SendLoginClearedPattern = function(userData_){
+    var socket = this.GetSocket(userData_.socketID);
     var data = {};
-    data.clearedNumOfPattern_ = clearedNumOfPattern_;
-    var socket = this.GetSocket(socketID);
-    console.log('SendLoginClearedPattern size:' + _utils.size(clearedNumOfPattern_));
+    data.clearedNumOfPattern = userData_.GetClearedNumOfPattern();
+    console.log('SendLoginClearedPattern size:' + _utils.size(data.clearedNumOfPattern));
     socket.emit('login_cleared_pattern_not', data);
+
+    this.SendMyRanking(userData_);
+}
+
+exports.SendMyRanking = function(userData_){
+    var socket = this.GetSocket(userData_.socketID);
+    var data = {};
+    data.myRanking = _rankingManager.GetUserRanking(userData_.GetKey());
+    if( userData_.myRanking === data.myRanking )
+        return;
+    userData_.myRanking = data.myRanking;
+    socket.emit('my_ranking_not', data);
 }

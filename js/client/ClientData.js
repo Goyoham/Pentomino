@@ -5,6 +5,7 @@ var clientData = new ClientData;
 ClientData.prototype.NumOfPattern = {};
 ClientData.prototype.ClearedNumOfPattern = {};
 ClientData.prototype.TotalNumOfPattern = 0;
+ClientData.prototype.MyRanking = 0;
 
 ClientData.prototype.InitData = function(data){
     this.NumOfPattern = data.NumOfPattern;
@@ -19,9 +20,15 @@ ClientData.prototype.InitData = function(data){
 
 ClientData.prototype.InitClearedData = function(data){
     this.ClearedNumOfPattern = {};
-    for(var i in data.clearedNumOfPattern_){
-        this.SetClearedNumOfPattern(i, data.clearedNumOfPattern_[i]);
+    for(var i in data.clearedNumOfPattern){
+        this.SetClearedNumOfPattern(i, data.clearedNumOfPattern[i]);
     }
+}
+
+ClientData.prototype.SetMyRanking = function(myRanking_){
+    this.MyRanking = myRanking_;
+    if( _gameState.GetState() == state.MainPage )
+        _gameState.SetState(state.MainPage);
 }
 
 ClientData.prototype.GetNumOfPattern = function(size){
@@ -70,8 +77,12 @@ ClientData.prototype.IsAllCleared = function(size){
 
 ClientData.prototype.GetPercentMyClearDataStr = function(size){
     var clearedNum = clientData.GetClearedNumOfPattern(size);
+    return this.GetPercentStr(clearedNum, size);
+}
+
+ClientData.prototype.GetPercentStr = function(clearedNum, size){
     var totalNum = clientData.GetNumOfPattern(size);
     if( totalNum === 0 )
         return 'err/0';
-    return ' (' +(clearedNum / totalNum * 100).toFixed(2) + '%)';
+    return ' (' +(clearedNum / this.TotalNumOfPattern * 100).toFixed(2) + '%)';
 }

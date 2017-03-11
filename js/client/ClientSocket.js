@@ -13,7 +13,8 @@ socket.on('login_cleared_pattern_not', function(data){
     console.log('got login data');
     clientData.InitClearedData(data);
     if( mainPage.ready ){
-        mainPage.ShowMainPage();
+        // mainPage.ShowMainPage();
+        _gameState.SetState(state.MainPage);
     }
 });
 
@@ -40,16 +41,34 @@ socket.on('verify_cleared_game_ack', function(data){
     clientData.SetClearedNumOfPattern(data.clearedData.sizeStr, data.clearedData.clearedNum);
 });
 
-ClientSocket.prototype.ReverifyLogin_Facebook = function(response){
-    socket.emit('reverify_login_from_facebook_req', response);
+ClientSocket.prototype.ReverifyLogin_Facebook = function(data){
+    socket.emit('reverify_login_from_facebook_req', data);
 }
 socket.on('reverify_login_from_facebook_ack', function(data){
     console.log(data);
 });
+
+ClientSocket.prototype.SendLoginedUserInfoNot = function(data){
+    socket.emit('logined_user_info_not', data);
+}
 
 ClientSocket.prototype.LoginOut_Facebook = function(){
     socket.emit('loginout_from_facebook_req', {});
 }
 socket.on('loginout_from_facebook_ack', function(data){
     console.log(data);
+});
+
+socket.on('my_ranking_not', function(data){
+    console.log(data);
+    clientData.SetMyRanking( data.myRanking );
+});
+
+ClientSocket.prototype.SendRankingListByPageReq = function(page_){
+    var data = {};
+    data.page = page_;
+    socket.emit('get_ranking_list_by_page_req', data);
+}
+socket.on('get_ranking_list_by_page_ack', function(data){
+    rankingPage.ShowRankingList(data);
 });

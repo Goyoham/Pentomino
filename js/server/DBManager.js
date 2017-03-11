@@ -1,7 +1,7 @@
 
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
-
+ 
 var UserDBData;
 exports.db;
 exports.Init = function(){
@@ -15,36 +15,83 @@ exports.Init = function(){
     var userDBDataSchema = mongoose.Schema({
         _id: String, //loginKey
         loginType: Number,
-        clearedData: [{ size: String, _id: String }]
+        name: String,
+        clearedData: [{ size: String, _id: String }],
+        TotalClearedNum: {
+            type: Number,
+            index: true,
+        }
     });
 
     UserDBData = mongoose.model('UserDBData', userDBDataSchema);
+
+    this.FindUserRankingData();
+}
+
+exports.FindUserRankingData = function(){
+    UserDBData.find(
+        {},
+        {
+            name: true, 
+            TotalClearedNum: true,
+        },
+        function(err, data){
+        if(err) return console.error(err);
+        console.log('findAll'+data);        
+        _rankingManager.InitRanking(data);
+    });
 }
 
 exports.FindUserData = function(userData_, findOnly_){
     console.log('find data type: ' + userData_.GetLoginType() + ' key: '+ userData_.GetKey());
-    UserDBData.find({_id: userData_.GetKey()},function(err, data){
+    UserDBData.find(
+        { 
+            _id: userData_.GetKey() 
+        }
+        , function(err, data){
         if(err) return console.error(err);
         if( findOnly_ )
             return;
         userData_.onLoadDataResult(data);
-    })    
+    });
 }
 
 exports.CreateNewUserData = function(userData_){
-    console.log('create new data type: ' + userData_.GetLoginType() + ' key: '+ userData_.GetKey());
-    var saveData = new UserDBData({ loginType: userData_.GetLoginType(), _id: userData_.GetKey() });
+    var userKey = userData_.GetKey();
+    console.log('create new data type: ' + userData_.GetLoginType() + ' key: '+ userKey);
+    var saveData = new UserDBData({ 
+        loginType: userData_.GetLoginType()
+        , _id: userKey
+        , name: ''
+        , TotalClearedNum: 0
+    });
     saveData.save(function(err){
         if (err) console.log(err);
     });
     console.log(saveData);
 }
 
-exports.UpdateClaredGame = function(loginKey_, sizeStr, pattern){
-    console.log('update data key: ' + loginKey_ + ' sizeStr: '+ sizeStr + ' pattern: ' + pattern);
+exports.UpdateUserInfo = function(userData_){
+    var userKey = userData_.GetKey();
+    console.log('update data key: ' + userKey + ' name: '+userData_.userInfo.name);
     UserDBData.update(
-        { _id: loginKey_ },
-        { $push: { clearedData: { size: sizeStr, _id: pattern } } },
+        { _id: userKey },
+        { $set: { name: userData_.userInfo.name } },
+        function(err){
+        if (err) console.log(err);
+    });
+}
+
+exports.UpdateClaredGame = function(userData_, sizeStr, pattern){
+    var userKey = userData_.GetKey();
+    var totalClreaedNum = userData_.GetTotalClearedNum();
+    console.log('update data key: ' + userKey + ' sizeStr: '+ sizeStr + ' pattern: ' + pattern + ' totalClearedNum: ' + totalClreaedNum);
+    UserDBData.update(
+        { _id: userKey },
+        { 
+            $push: { clearedData: { size: sizeStr, _id: pattern } },
+            $set: { TotalClearedNum: totalClreaedNum },
+        },
         function(err){
         if (err) console.log(err);
     });

@@ -26,6 +26,7 @@ function preload() {
     game.load.spritesheet('btn_board2', 'assets/btn_board2.png', 90, 90);    
     game.load.spritesheet('btn_play1', 'assets/btn_play1.png', 90, 90);
     game.load.spritesheet('btn_back', 'assets/btn_back.png', 90, 90);
+    game.load.spritesheet('btn_ranking', 'assets/btn_ranking.png', 90, 60);
 
     // facebook
     game.load.spritesheet('btn_login_fb', 'assets/btn_login_fb.png', 123, 39);
@@ -50,7 +51,8 @@ function create() {
     // 블럭 만들기
     blockMgr.InitBlockForms();
 
-    mainPage.ShowMainPage();
+    //mainPage.ShowMainPage();
+    _gameState.SetState(state.MainPage);
     mainPage.ready = true;
     // text message
     //textMessage.createText();

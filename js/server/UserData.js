@@ -26,7 +26,10 @@ UserData.prototype.verifyingID = 0;
 UserData.prototype.loginType = 0;
 UserData.prototype.playingPattern = 0;
 UserData.prototype.clearedPatterns = {};
+UserData.prototype.totalClearedNum = 0;
 UserData.prototype.socketID;
+UserData.prototype.userInfo = {name: 'unknown'};
+UserData.prototype.myRanking = 0;
 
 UserData.prototype.SetID = function(id_, loginType_){
     this.id = id_;
@@ -55,6 +58,10 @@ UserData.prototype.GetLoginType = function(){
     return this.loginType;
 }
 
+UserData.prototype.GetName = function(){
+    return this.userInfo.name;
+}
+
 UserData.prototype.IsSaveAbleUser = function(){
     return this.loginType !== LOGIN_TYPE.None;
 }
@@ -64,7 +71,7 @@ UserData.prototype.Logout = function(){
     console.log('Logout User Key:'+this.GetKey());
     this.SetID(_userData.GenerateUnknownUserID(), LOGIN_TYPE.None );
     this.clearedPatterns = {}; // CLEAR
-    _serverSocket.SendLoginClearedPattern(this.socketID, this.GetClearedNumOfPattern());
+    _serverSocket.SendLoginClearedPattern(this);
 }
 
 UserData.prototype.LoadGameDataFromDB = function(){
@@ -72,14 +79,17 @@ UserData.prototype.LoadGameDataFromDB = function(){
 }
 
 UserData.prototype.onLoadDataResult = function(dbData){
-    console.log('Login User Key:'+this.GetKey() + ' dataLen:' + dbData.length);
+    console.log('Login User Key:'+this.GetKey() + ' dataLen:' + dbData.length + ' name:['+this.GetName()+']');
     // 4-1. 신규 유저면, 새 유저 데이터를 로그인 계정 데이터에 덮어쓰기 (db저장)
     if( dbData.length === 0 ){
         _dbManager.CreateNewUserData(this);
+        _rankingManager.InsertNewUser(this);
         this.UpdateDB_UnknownUserClearedPatterns();
-        _serverSocket.SendLoginClearedPattern(this.socketID, this.GetClearedNumOfPattern());
+        _serverSocket.SendLoginClearedPattern(this);
         return;
     }
+    if( this.GetName() !== 'unknown' )
+        _dbManager.UpdateUserInfo(this);
     // 4-2. 기존 유저면, 새 유저 데이터 삭제하고, 로그인 계정 데이터 사용
     this.clearedPatterns = {}; // CLEAR
     var len = dbData[0].clearedData.length;
@@ -88,25 +98,33 @@ UserData.prototype.onLoadDataResult = function(dbData){
         var data = dbData[0].clearedData[i];
         this.AddClearedPattern(data.size, data._id);
     }
-    _serverSocket.SendLoginClearedPattern(this.socketID, this.GetClearedNumOfPattern());
+    _serverSocket.SendLoginClearedPattern(this);
 }
 
 UserData.prototype.UpdateDB_UnknownUserClearedPatterns = function(){
     for(var sizeStr in this.clearedPatterns){
         for(var i in this.clearedPatterns[sizeStr]){
-            _dbManager.UpdateClaredGame(this.GetKey(), sizeStr, this.clearedPatterns[sizeStr][i]);
+            _dbManager.UpdateClaredGame(this, sizeStr, this.clearedPatterns[sizeStr][i]);
         }
     }
 }
 
 UserData.prototype.GetClearedNumOfPattern = function(){
     var clearedNumOfPattern = {};
-    //console.log(this.clearedPatterns);
+    this.totalClearedNum = 0;
     for(var i in this.clearedPatterns){
         clearedNumOfPattern[i] = this.clearedPatterns[i].size;
+        this.totalClearedNum += 1*clearedNumOfPattern[i];
     }
-    console.log(clearedNumOfPattern);
     return clearedNumOfPattern;
+}
+
+UserData.prototype.GetTotalClearedNum = function(){
+    return this.totalClearedNum;
+}
+
+UserData.prototype.AddTotalClearedNum = function(add_){
+    this.totalClearedNum += 1*add_;
 }
 
 UserData.prototype.SetPlayingPattern = function(pattern){
@@ -124,10 +142,13 @@ UserData.prototype.ClearPlayingPattern = function(){
         return clearedData;
     }
     clearedData.clearedNum = this.clearedPatterns[sizeStr].size;
+    this.AddTotalClearedNum(1);
 
     console.log('id:'+this.GetKey());
     if( this.IsSaveAbleUser() ){
-        _dbManager.UpdateClaredGame(this.GetKey(), sizeStr, this.playingPattern.hint);
+        _dbManager.UpdateClaredGame(this, sizeStr, this.playingPattern.hint);
+        _rankingManager.UpdateUserRecord(this);
+        _serverSocket.SendMyRanking(this);
     }
     console.log('new clear ' + sizeStr + ' ' + clearedData.clearedNum + ' ' + this.playingPattern.hint + ' loginType: ' + this.GetLoginType());
     return clearedData;

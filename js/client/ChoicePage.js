@@ -60,8 +60,9 @@ ChoicePage.prototype.onUpButton = function(button){
     {
         case 0:            
             // play official game
-            this.CloseChoicePage();
-            createGameMgr.ShowGamePage();
+            // this.CloseChoicePage();
+            // createGameMgr.ShowGamePage();
+            _gameState.SetState(state.GamePage);
         break;
 
         case 1:
@@ -71,6 +72,7 @@ ChoicePage.prototype.onUpButton = function(button){
 }
 
 ChoicePage.prototype.onUpBack = function(button){
-    this.CloseChoicePage();
-    mainPage.ShowMainPage();
+    // this.CloseChoicePage();
+    // mainPage.ShowMainPage();
+    _gameState.SetState(state.MainPage);
 }

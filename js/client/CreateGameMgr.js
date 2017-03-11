@@ -100,8 +100,9 @@ CreateGameMgr.prototype.CreateBtn_Hint = function(){
 }
 
 CreateGameMgr.prototype.onUpBack = function(){
-	this.CloseGame();
-	choicePage.ShowChoicePage();
+	// this.CloseGame();
+	// choicePage.ShowChoicePage();
+	_gameState.SetState(state.ChoicePage);
 }
 
 CreateGameMgr.prototype.onUpHint = function() {

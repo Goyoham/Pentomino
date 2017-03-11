@@ -4,13 +4,13 @@ function MainPage(){};
 var mainPage = new MainPage();
 
 MainPage.prototype.BUTTON_GAP = 270;
-MainPage.prototype.PADDING_Y = 340;
+MainPage.prototype.PADDING_Y = 350;
 MainPage.prototype.CALUMN_CNT = 4;
 MainPage.prototype.btnName = ['btn_board1', 'btn_board2'];
 MainPage.prototype.boardList = [
     '5x3', '5x4', '5x5', '6x5',
-    '7x5', '8x5', '9x5', '11x5',
-    '10x3', '10x4', '10x5', '10x6',
+    '7x5', '8x5', '9x5', '10x5',
+    '11x5', '10x3', '10x4', '10x6',
     '12x5', '15x3', '15x4'/*, '20x5'*/
     ];
 
@@ -21,7 +21,6 @@ MainPage.prototype.currGameType = '';
 MainPage.prototype.ready = false;
 
 MainPage.prototype.ShowMainPage = function(){
-    this.CloseMainPage();
     console.log('show main page');
 
     this.ObjectList = [];
@@ -47,7 +46,7 @@ MainPage.prototype.ShowMainPage = function(){
     // title
     {
         var clearData = clientData.GetMyClearDataStr(0, true);
-        var text = game.add.text(50, this.PADDING_Y - 300, 'Pentomino888', 
+        var text = game.add.text(50, this.PADDING_Y - 310, 'Pentomino888', 
             { font: '96px Arial', fill: '#ffffff', align: 'center'});
         text.stroke = '#FFB2FB';
         text.strokeThickness = 25;
@@ -58,7 +57,11 @@ MainPage.prototype.ShowMainPage = function(){
     // total
     {
         var clearData = clientData.GetMyClearDataStr(0, true);
-        var text = game.add.text(53, this.PADDING_Y - 170, 'Total : '+clearData, this.style);
+        var ranking = '';
+        if( clientData.MyRanking > 0 ){
+            ranking = '   Ranking: '+clientData.MyRanking;
+        }            
+        var text = game.add.text(53, this.PADDING_Y - 180, 'Total : ' + clearData + ranking, this.style);
         text.stroke = '#6AD8C4';
         text.strokeThickness = 30;
         text.setShadow(2, 2, '#333333', 2, true, true);
@@ -72,6 +75,13 @@ MainPage.prototype.ShowMainPage = function(){
         button.scale.set(2);
         button.x = SCREEN_WIDTH - button.width - 10;
         this.ObjectList.push(button);
+    }
+
+    { // btn_rankPage
+        var btn_ranking = game.add.button(0,  20, 'btn_ranking', this.onUpRankingPage, this, 0, 0, 1);
+        btn_ranking.scale.set(2);
+        btn_ranking.x = SCREEN_WIDTH - btn_ranking.width-10;
+        this.ObjectList.push(btn_ranking);
     }
 
     this.SetLoginUserData();
@@ -109,8 +119,9 @@ MainPage.prototype.RemoveLoginUserData = function(){
 MainPage.prototype.onUpBoard = function(button){
     console.log('on button ' + button.variable);
     this.currGameType = button.variable;
-    this.CloseMainPage();
-    choicePage.ShowChoicePage();
+    // this.CloseMainPage();
+    // choicePage.ShowChoicePage();
+    _gameState.SetState(state.ChoicePage);
 }
 
 MainPage.prototype.onLogin_fb = function(){
@@ -129,4 +140,8 @@ MainPage.prototype.onLogin_fb = function(){
             _login_Facebook.statusChangeCallback(response);
         });
     }
+}
+
+MainPage.prototype.onUpRankingPage = function(){
+    _gameState.SetState(state.RankingPage);
 }

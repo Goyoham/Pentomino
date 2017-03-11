@@ -11,6 +11,7 @@ _dbManager = require('./DBManager.js');
 _userData = require('./UserData.js');
 _serverSocket = require('./ServerSocket.js');
 _webRequest = require('./WebRequest.js');
+_rankingManager = require('./RankingManager.js');
 
 var port = 80;
 

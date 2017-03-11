@@ -6,4 +6,4 @@ VVVNNNFTWYYYYZPPPXUU_VLNNFFFTWWYZZZPPXXXU_VLLLLFTTTWWZIIIIIXUU
 numSize : 1
 numBlockList : 1
 numPatterns : 2
-elapsedTime : 35.272
+elapsedTime : 34.523
