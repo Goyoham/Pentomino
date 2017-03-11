@@ -81,7 +81,7 @@ exports.GetRankingOrderIndex = function(data_){
 }
 
 exports.InsertNewUser = function(userData_){
-    if( this.GetUserRanking(userData.GetKey()) > 0 )
+    if( this.GetUserRanking(userData_.GetKey()) > 0 )
         return;
     var data = {};
     data._id = userData_.GetKey();
