@@ -98,14 +98,18 @@ UserData.prototype.onLoadDataResult = function(dbData){
         var data = dbData[0].clearedData[i];
         this.AddClearedPattern(data.size, data._id);
     }
+    // 보내기 전에 비정상 데이터 검증 해야겠다.
+    this.VerifyClearedPatterns();
     _serverSocket.SendLoginClearedPattern(this);
 }
 
 UserData.prototype.UpdateDB_UnknownUserClearedPatterns = function(){
+    var userData = this;
     for(var sizeStr in this.clearedPatterns){
-        for(var i in this.clearedPatterns[sizeStr]){
-            _dbManager.UpdateClaredGame(this, sizeStr, this.clearedPatterns[sizeStr][i]);
-        }
+        this.clearedPatterns[sizeStr].forEach(function(item){
+            console.log('******' + userData + ' ' + sizeStr + ' ' + item);
+            _dbManager.UpdateClaredGame(userData, sizeStr, item);
+        });
     }
 }
 
@@ -166,6 +170,33 @@ UserData.prototype.AddClearedPattern = function(sizeStr, pattern){
     this.clearedPatterns[sizeStr].add(pattern);
     //console.log('add '+ sizeStr + ' ' + pattern);
     return true;
+}
+
+UserData.prototype.VerifyClearedPatterns = function(){
+    var deleteDBList = [];
+    for(var sizeStr in this.clearedPatterns){
+        if( this.clearedPatterns[sizeStr].size <= _patternData.GetNumOfPattern(sizeStr) )
+            continue;
+        
+        // 조건에 안맞으면 전체 검사 수행
+        var deleteAsSize = [];
+        this.clearedPatterns[sizeStr].forEach(function(item){
+            if( !_patternData.IsPattern(item) ){
+                deleteAsSize.push(item);
+                deleteDBList.push(item);
+            }
+        });
+        
+        for(var i in deleteAsSize){
+            this.clearedPatterns[sizeStr].delete(deleteAsSize[i]);
+            console.log('delete:' + deleteAsSize[i]);
+        }
+    }
+    for(var i in deleteDBList){        
+        _dbManager.DeleteClaredGame(this, deleteDBList[i]);
+    }
+    this.GetClearedNumOfPattern();
+    _dbManager.UpdateTotalClearedNum(this);
 }
 
 UserData.prototype.IsAllClearedOfficialGame = function(sizeStr){

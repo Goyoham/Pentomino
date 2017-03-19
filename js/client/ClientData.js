@@ -72,7 +72,7 @@ ClientData.prototype.GetMyClearDataStr = function(size, withPercent){
 }
 
 ClientData.prototype.IsAllCleared = function(size){
-    return clientData.GetClearedNumOfPattern(size) === clientData.GetNumOfPattern(size);
+    return clientData.GetClearedNumOfPattern(size) >= clientData.GetNumOfPattern(size);
 }
 
 ClientData.prototype.GetPercentMyClearDataStr = function(size){

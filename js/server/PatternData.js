@@ -5,6 +5,7 @@ _patternData = new PatternData();
 
 PatternData.prototype.data = [];
 PatternData.prototype.patterns = {};
+PatternData.prototype.patternList = new Set();
 PatternData.prototype.patternsByLevel = {};
 PatternData.prototype.NumOfPattern = {}; // size당 pattern 수 데이터
 PatternData.prototype.TotalNumOfPattern = 0; // 전체 pattern 수
@@ -88,9 +89,10 @@ PatternData.prototype.ReadData = function(){
         }
         else{
             ++numPatterns;
+            this.patternList.add(line);
+            //console.log(line);
             line = line.replace(/_/gi,'');
             this.patterns[currSize][currBlocks].push(line);
-            //console.log(line);
 
             var lastIndex = this.patternsByLevel[currSize].length-1;
             this.patternsByLevel[currSize][lastIndex].numOfAnswer++;
@@ -112,6 +114,7 @@ PatternData.prototype.ReadData = function(){
         this.TotalNumOfPattern += (this.NumOfPattern[i]*1);
     }
     console.log('TotalNumOfPattern : ' + this.TotalNumOfPattern);
+    console.log('Pattern set Size : ' + this.patternList.size);
     console.log('-- end -------------------');
 }
 
@@ -155,6 +158,10 @@ PatternData.prototype.GetNumOfPattern = function(sizeStr){
     if( !this.NumOfPattern.hasOwnProperty(sizeStr) )
         return 0;
     return this.NumOfPattern[sizeStr];
+}
+
+PatternData.prototype.IsPattern = function(pattern){
+    return this.patternList.has(pattern);
 }
 
 PatternData.prototype.makeHint = function(width, blockArray){

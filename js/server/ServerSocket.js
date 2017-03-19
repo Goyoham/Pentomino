@@ -151,6 +151,7 @@ exports.SendLoginClearedPattern = function(userData_){
     console.log('SendLoginClearedPattern size:' + _utils.size(data.clearedNumOfPattern));
     socket.emit('login_cleared_pattern_not', data);
 
+    _rankingManager.UpdateUserRecord(userData_);
     this.SendMyRanking(userData_);
 }
 

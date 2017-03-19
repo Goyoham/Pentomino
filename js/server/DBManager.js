@@ -10,7 +10,7 @@ exports.Init = function(){
     this.db.on('error', console.error.bind(console, 'db connection error:'));
     this.db.once('open', function callback (){
         console.log("connected to db");
-    })
+    });
 
     var userDBDataSchema = mongoose.Schema({
         _id: String, //loginKey
@@ -91,6 +91,33 @@ exports.UpdateClaredGame = function(userData_, sizeStr, pattern){
         { 
             $push: { clearedData: { size: sizeStr, _id: pattern } },
             $set: { TotalClearedNum: totalClreaedNum },
+        },
+        function(err){
+        if (err) console.log(err);
+    });
+}
+
+exports.UpdateTotalClearedNum = function(userData_){
+    var userKey = userData_.GetKey();
+    var totalClreaedNum = userData_.GetTotalClearedNum();
+    console.log('update TotalClearedNum: ' + userKey + ' totalClearedNum: ' + totalClreaedNum);
+    UserDBData.update(
+        { _id: userKey },
+        { 
+            $set: { TotalClearedNum: totalClreaedNum },
+        },
+        function(err){
+        if (err) console.log(err);
+    });
+}
+
+exports.DeleteClaredGame = function(userData_, pattern){
+    var userKey = userData_.GetKey();
+    console.log('delete pattern key: ' + userKey + ' pattern: ' + pattern);
+    UserDBData.update(
+        { _id: userKey },
+        { 
+            $pull: { clearedData: { _id: pattern } },
         },
         function(err){
         if (err) console.log(err);
