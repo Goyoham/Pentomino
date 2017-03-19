@@ -77,7 +77,7 @@ exports.OnPacket = function(socket){
     socket.on('logined_user_info_not', function(data){
         console.log('*loginedName: '+data.name);
         var userData = _serverSocket.GetUserData(socket.id);
-        userData.userInfo = data;
+        userData.SetUserInfo(data);
 	});
 
     socket.on('loginout_from_facebook_req', function(data){

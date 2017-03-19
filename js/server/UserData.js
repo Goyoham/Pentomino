@@ -60,6 +60,13 @@ UserData.prototype.GetLoginType = function(){
     return this.loginType;
 }
 
+UserData.prototype.SetUserInfo = function(userInfo){
+    this.userInfo = userInfo;
+    
+    if( this.GetName() !== 'unknown' && this.GetName() !== '' )
+        _dbManager.UpdateUserInfo(this);
+}
+
 UserData.prototype.GetName = function(){
     return this.userInfo.name;
 }
@@ -138,8 +145,6 @@ UserData.prototype.onLoadDataResult = function(dbData){
         _serverSocket.SendLoginClearedPattern(this);
         return;
     }
-    if( this.GetName() !== 'unknown' )
-        _dbManager.UpdateUserInfo(this);
     // 4-2. 기존 유저면, 새 유저 데이터 삭제하고, 로그인 계정 데이터 사용
     this.clearedPatterns = {}; // CLEAR
     var myDBData = dbData[0];
