@@ -1,7 +1,5 @@
 
 LOGIN_TYPE = {None: 0, Facebook: 1, Google: 2};
-//APP = {ID: '1780322648960716', SECRET: 'ed92ed7c67d4e91992b7911c3f356c57'}; // LIVE
-APP = {ID: '1784544075205240', SECRET: '48af0226ba68670e07014b92aa6ef543'}; // TEST
 
 function Utils(){}
 

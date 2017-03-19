@@ -4,6 +4,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+require('../../AppInfo.js');
 require('../common/Utils.js');
 require('../common/BlockMgr.js');
 require('./PatternData.js');
