@@ -120,24 +120,6 @@ PatternData.prototype.ReadData = function(){
 
 PatternData.prototype.nowLevel = 0;
 PatternData.prototype.playLevel = 0;
-PatternData.prototype.getRandomPattern = function(){
-    var randomPattern = {};
-    var sizekeys = Object.keys(this.patterns)
-    this.nowLevel = this.playLevel < sizekeys.length-1 ? this.playLevel : sizekeys.length-1;
-    var sizeRanKey = sizekeys[this.nowLevel];
-    var size = _getSizeFromStr(sizeRanKey);
-    console.log('NowLevel : ' + this.nowLevel);
-
-    var blockkeys = Object.keys(this.patterns[sizeRanKey])
-    var blockRanKey = blockkeys[blockkeys.length * Math.random() << 0];
-    
-    randomPattern.width = size.width;
-    randomPattern.height = size.height;
-    randomPattern.blockList = blockRanKey;
-    randomPattern.hint = this.makeHint(size.width, _getRandomPropertyArr(this.patterns[sizeRanKey][blockRanKey]));
-    randomPattern.blockListMap = this.makeBlockListMap(blockRanKey, randomPattern.hint);
-    return randomPattern;
-}
 
 PatternData.prototype.getPattern = function(gameType){
     var randomPattern = {};
@@ -149,8 +131,9 @@ PatternData.prototype.getPattern = function(gameType){
     randomPattern.width = size.width;
     randomPattern.height = size.height;
     randomPattern.blockList = blockRanKey;
-    randomPattern.hint = this.makeHint(size.width, _getRandomPropertyArr(this.patterns[gameType][blockRanKey]));
-    randomPattern.blockListMap = this.makeBlockListMap(blockRanKey, randomPattern.hint);
+    randomPattern.answer = this.makeAnswer(size.width, _getRandomPropertyArr(this.patterns[gameType][blockRanKey]));
+    randomPattern.blockListMap = this.makeBlockListMap(blockRanKey, randomPattern.answer);
+    randomPattern.hint = [];
     return randomPattern;
 }
 
@@ -164,7 +147,7 @@ PatternData.prototype.IsPattern = function(pattern){
     return this.patternList.has(pattern);
 }
 
-PatternData.prototype.makeHint = function(width, blockArray){
+PatternData.prototype.makeAnswer = function(width, blockArray){
     var result = '';
     for(var i in blockArray){
         result += blockArray[i];

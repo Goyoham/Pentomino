@@ -64,6 +64,11 @@ socket.on('my_ranking_not', function(data){
     clientData.SetMyRanking( data.myRanking );
 });
 
+socket.on('update_have_hint_not', function(data){
+    console.log(data);
+    clientData.SetHaveHint( data.haveHint );
+});
+
 ClientSocket.prototype.SendRankingListByPageReq = function(page_){
     var data = {};
     data.page = page_;
@@ -71,4 +76,13 @@ ClientSocket.prototype.SendRankingListByPageReq = function(page_){
 }
 socket.on('get_ranking_list_by_page_ack', function(data){
     rankingPage.ShowRankingList(data);
+});
+
+ClientSocket.prototype.SendGetHintReq = function(hintNum){
+    var data = {};
+    data.hintNum = hintNum;
+    socket.emit('get_hint_req', data);
+}
+socket.on('get_hint_ack', function(data){
+    createGameMgr.AddHint(data.hintData);
 });

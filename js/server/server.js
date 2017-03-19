@@ -4,6 +4,14 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+require("jsdom").env("", function(err, window) {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    $ = require("jquery")(window);
+});
+
 require('../../AppInfo.js');
 require('../common/Utils.js');
 require('../common/BlockMgr.js');

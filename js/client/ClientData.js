@@ -6,16 +6,17 @@ ClientData.prototype.NumOfPattern = {};
 ClientData.prototype.ClearedNumOfPattern = {};
 ClientData.prototype.TotalNumOfPattern = 0;
 ClientData.prototype.MyRanking = 0;
+ClientData.prototype.haveHint = 0;
 
 ClientData.prototype.InitData = function(data){
     this.NumOfPattern = data.NumOfPattern;
     this.TotalNumOfPattern = data.TotalNumOfPattern;
 
     for(var i in this.NumOfPattern){
-        console.log(i + ' ' + this.NumOfPattern[i]);
+        //console.log(i + ' ' + this.NumOfPattern[i]);
         this.ClearedNumOfPattern[i] = 0;
     }
-    console.log('TotalNumOfPattern : ' + this.TotalNumOfPattern);
+    //console.log('TotalNumOfPattern : ' + this.TotalNumOfPattern);
 }
 
 ClientData.prototype.InitClearedData = function(data){
@@ -29,6 +30,21 @@ ClientData.prototype.SetMyRanking = function(myRanking_){
     this.MyRanking = myRanking_;
     if( _gameState.GetState() == state.MainPage )
         _gameState.SetState(state.MainPage);
+}
+
+ClientData.prototype.SetHaveHint = function(haveHint){
+    this.haveHint = haveHint;
+    console.log('setHaveHint:'+this.haveHint);
+}
+
+ClientData.prototype.GetHaveHint = function(){
+    return this.haveHint;
+}
+
+ClientData.prototype.DecreaseHaveHint = function(){
+    if( this.haveHint <= 0 )
+        return;
+    --this.haveHint;
 }
 
 ClientData.prototype.GetNumOfPattern = function(size){
@@ -45,7 +61,7 @@ ClientData.prototype.GetNumOfPattern = function(size){
 
 ClientData.prototype.SetClearedNumOfPattern = function(size, num){
     this.ClearedNumOfPattern[size] = num;
-    console.log('set clearedNum ' + size + ' ' + num);
+    //console.log('set clearedNum ' + size + ' ' + num);
 }
 
 ClientData.prototype.GetClearedNumOfPattern = function(size){

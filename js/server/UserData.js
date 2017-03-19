@@ -24,12 +24,14 @@ function UserData(){}
 UserData.prototype.id = 0;
 UserData.prototype.verifyingID = 0;
 UserData.prototype.loginType = 0;
-UserData.prototype.playingPattern = 0;
+UserData.prototype.playingPattern = {};
 UserData.prototype.clearedPatterns = {};
 UserData.prototype.totalClearedNum = 0;
 UserData.prototype.socketID;
 UserData.prototype.userInfo = {name: 'unknown'};
 UserData.prototype.myRanking = 0;
+UserData.prototype.haveHint = 0;
+UserData.prototype.lastFilledHintDate = new Date();
 
 UserData.prototype.SetID = function(id_, loginType_){
     this.id = id_;
@@ -62,6 +64,55 @@ UserData.prototype.GetName = function(){
     return this.userInfo.name;
 }
 
+UserData.prototype.FillHaveHint = function(fillHint){
+    this.haveHint = fillHint;
+    this.lastFilledHintDate = new Date();
+    _dbManager.UpdateHaveHint(this, true);
+}
+
+UserData.prototype.DailyFillHaveHint = function(haveHint, lastDate){
+    if( typeof haveHint !== 'undefined' )
+        this.haveHint = haveHint;
+    if( typeof lastDate !== 'undefined' )
+    {
+        this.lastFilledHintDate = lastDate;
+        this.lastFilledHintDate.setHours(0);
+        this.lastFilledHintDate.setMinutes(0);
+        this.lastFilledHintDate.setSeconds(0);
+        this.lastFilledHintDate.setDate(this.lastFilledHintDate.getDate()+1);
+        // check, is still today.
+        console.log(this.lastFilledHintDate);
+        console.log(new Date());
+        if( this.lastFilledHintDate > new Date() )
+            return;
+    }
+
+    if( this.haveHint >= 10 )
+        return;
+    this.FillHaveHint(10);
+}
+
+UserData.prototype.AddHaveHint = function(AddHint){
+    this.haveHint += AddHint;
+    if( this.haveHint < 0 )
+        this.haveHint = 0;
+    _dbManager.UpdateHaveHint(this);
+}
+
+UserData.prototype.DecreaseHaveHint = function(){
+    if( this.haveHint > 0 )
+    {
+        --this.haveHint;
+        _dbManager.UpdateHaveHint(this);
+        return true;
+    }
+    return false;
+}
+
+UserData.prototype.GetHaveHint = function(){
+    return this.haveHint;
+}
+
 UserData.prototype.IsSaveAbleUser = function(){
     return this.loginType !== LOGIN_TYPE.None;
 }
@@ -84,6 +135,7 @@ UserData.prototype.onLoadDataResult = function(dbData){
     if( dbData.length === 0 ){
         _dbManager.CreateNewUserData(this);
         _rankingManager.InsertNewUser(this);
+        this.FillHaveHint(100);
         this.UpdateDB_UnknownUserClearedPatterns();
         _serverSocket.SendLoginClearedPattern(this);
         return;
@@ -92,14 +144,16 @@ UserData.prototype.onLoadDataResult = function(dbData){
         _dbManager.UpdateUserInfo(this);
     // 4-2. 기존 유저면, 새 유저 데이터 삭제하고, 로그인 계정 데이터 사용
     this.clearedPatterns = {}; // CLEAR
-    var len = dbData[0].clearedData.length;
+    var myDBData = dbData[0];
+    var len = myDBData.clearedData.length;
     console.log('load data length : ' + len);
     for(var i = 0; i < len; ++i){
-        var data = dbData[0].clearedData[i];
+        var data = myDBData.clearedData[i];
         this.AddClearedPattern(data.size, data._id);
     }
     // 보내기 전에 비정상 데이터 검증 해야겠다.
     this.VerifyClearedPatterns();
+    this.DailyFillHaveHint(myDBData.haveHint, myDBData.lastFilledHintDate);
     _serverSocket.SendLoginClearedPattern(this);
 }
 
@@ -133,6 +187,7 @@ UserData.prototype.AddTotalClearedNum = function(add_){
 
 UserData.prototype.SetPlayingPattern = function(pattern){
     this.playingPattern = pattern;
+    this.MakeHintList();
 }
 
 UserData.prototype.ClearPlayingPattern = function(){
@@ -140,9 +195,9 @@ UserData.prototype.ClearPlayingPattern = function(){
     var clearedData = {};
     clearedData.sizeStr = sizeStr;
 
-    if( this.AddClearedPattern(sizeStr, this.playingPattern.hint) === false ){
+    if( this.AddClearedPattern(sizeStr, this.playingPattern.answer) === false ){
         clearedData.clearedNum = this.clearedPatterns[sizeStr].size;
-        console.log('duplicated clear ' + sizeStr + ' ' + this.playingPattern.hint);
+        console.log('duplicated clear ' + sizeStr + ' ' + this.playingPattern.answer);
         return clearedData;
     }
     clearedData.clearedNum = this.clearedPatterns[sizeStr].size;
@@ -150,11 +205,11 @@ UserData.prototype.ClearPlayingPattern = function(){
 
     console.log('id:'+this.GetKey());
     if( this.IsSaveAbleUser() ){
-        _dbManager.UpdateClaredGame(this, sizeStr, this.playingPattern.hint);
+        _dbManager.UpdateClaredGame(this, sizeStr, this.playingPattern.answer);
         _rankingManager.UpdateUserRecord(this);
         _serverSocket.SendMyRanking(this);
     }
-    console.log('new clear ' + sizeStr + ' ' + clearedData.clearedNum + ' ' + this.playingPattern.hint + ' loginType: ' + this.GetLoginType());
+    console.log('new clear ' + sizeStr + ' ' + clearedData.clearedNum + ' ' + this.playingPattern.answer + ' loginType: ' + this.GetLoginType());
     return clearedData;
 }
 
@@ -215,7 +270,36 @@ UserData.prototype.GetOfficialPattern = function(sizeStr){
             break;
         if( !this.clearedPatterns.hasOwnProperty(sizeStr) )
             break;
-    } while( this.clearedPatterns[sizeStr].has(pattern.hint) );
-    console.log('gameType : ' + sizeStr + ' key:' + pattern.blockList + ' ans:' + pattern.hint);
+    } while( this.clearedPatterns[sizeStr].has(pattern.answer) );
+    console.log('gameType : ' + sizeStr + ' key:' + pattern.blockList + ' ans:' + pattern.answer);
+    this.SetPlayingPattern($.extend(true, {}, pattern)); // deep copy
+    pattern.answer = '';
     return pattern;
+}
+
+UserData.prototype.MakeHintList = function(){
+	var arrBlock = this.playingPattern.answer.split('_');
+    var hint = {};
+	for(var y in arrBlock){
+		for(var x in arrBlock[y]){
+            var pos = {}
+            pos.x = x;
+            pos.y = y;
+            if(typeof hint[arrBlock[y][x]] === 'undefined')
+                hint[arrBlock[y][x]] = [];
+            hint[arrBlock[y][x]].push(pos);
+		}
+	}
+
+    for(var k in hint){
+        this.playingPattern.hint.push(hint[k]);
+    }
+}
+
+UserData.prototype.GetHint = function(index){
+    if( index < 0 || index >= this.playingPattern.hint.length )
+        return [];
+    if( !this.DecreaseHaveHint() )
+        return [];
+    return this.playingPattern.hint[index];
 }

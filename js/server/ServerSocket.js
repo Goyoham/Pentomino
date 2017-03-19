@@ -96,7 +96,6 @@ exports.OnPacket = function(socket){
             return;
 		var ack = {};
         ack.ranPattern = userData.GetOfficialPattern(data.gameType);
-        userData.SetPlayingPattern(ack.ranPattern);
         socket.emit('get_game_pattern_ack', ack);
 	});
 
@@ -121,6 +120,16 @@ exports.OnPacket = function(socket){
         var ack = {};
         ack.rankingList = _rankingManager.GetRankingListByPage(data.page);
         socket.emit('get_ranking_list_by_page_ack', ack);
+	});
+
+    socket.on('get_hint_req', function(data){
+        var userData = _serverSocket.GetUserData(socket.id);
+        if( typeof userData === 'undefined')
+            return;
+        
+        var ack = {};
+        ack.hintData = userData.GetHint(data.hintNum);
+        socket.emit('get_hint_ack', ack);
 	});
 }
 
@@ -153,6 +162,7 @@ exports.SendLoginClearedPattern = function(userData_){
 
     _rankingManager.UpdateUserRecord(userData_);
     this.SendMyRanking(userData_);
+    this.UpdateHaveHint(userData_);
 }
 
 exports.SendMyRanking = function(userData_){
@@ -163,4 +173,11 @@ exports.SendMyRanking = function(userData_){
         return;
     userData_.myRanking = data.myRanking;
     socket.emit('my_ranking_not', data);
+}
+
+exports.UpdateHaveHint = function(userData_){
+    var socket = this.GetSocket(userData_.socketID);
+    var data = {};
+    data.haveHint = userData_.GetHaveHint();
+    socket.emit('update_have_hint_not', data);
 }

@@ -7,7 +7,6 @@ textMessage = new TextMessage();
 
 TextMessage.prototype.textContent;
 TextMessage.prototype.textClear;
-TextMessage.prototype.texthint;
 TextMessage.prototype.timerDisappear;
 
 TextMessage.prototype.enabledText = false;
@@ -21,9 +20,6 @@ TextMessage.prototype.createText = function(){
     // clear text
     this.textClear = game.add.bitmapText(60*3, 230*3, 'font_desyrel', '', 64*3);
 
-	// hint text
-	this.texthint = game.add.text(115, 40, '', { font: "20px Arial", fill: "#FFFFFF", align: "center" });
-
 	this.enabledText = true;
 }
 
@@ -32,7 +28,6 @@ TextMessage.prototype.terminateText = function(){
 
 	this.textContent.kill();
 	this.textClear.kill();
-	this.texthint.kill();
 }
 
 TextMessage.prototype.setTextMessage = function(msg){
@@ -58,8 +53,4 @@ TextMessage.prototype.updateClearText = function(){
    		this.textClear.text = 'CLEAR!!';
 	else
 		this.textClear.text = '';
-}
-
-TextMessage.prototype.updateHintText = function(usedHint){
-	//this.texthint.text = '<Used Hint:'+usedHint+'>';
 }

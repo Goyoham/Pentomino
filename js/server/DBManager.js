@@ -20,7 +20,9 @@ exports.Init = function(){
         TotalClearedNum: {
             type: Number,
             index: true,
-        }
+        },
+        haveHint: Number,
+        lastFilledHintDate: Date
     });
 
     UserDBData = mongoose.model('UserDBData', userDBDataSchema);
@@ -64,6 +66,8 @@ exports.CreateNewUserData = function(userData_){
         , _id: userKey
         , name: ''
         , TotalClearedNum: 0
+        , haveHint: 100
+        , lastFilledHintDate: new Date()
     });
     saveData.save(function(err){
         if (err) console.log(err);
@@ -97,6 +101,19 @@ exports.UpdateClaredGame = function(userData_, sizeStr, pattern){
     });
 }
 
+exports.DeleteClaredGame = function(userData_, pattern){
+    var userKey = userData_.GetKey();
+    console.log('delete pattern key: ' + userKey + ' pattern: ' + pattern);
+    UserDBData.update(
+        { _id: userKey },
+        { 
+            $pull: { clearedData: { _id: pattern } },
+        },
+        function(err){
+        if (err) console.log(err);
+    });
+}
+
 exports.UpdateTotalClearedNum = function(userData_){
     var userKey = userData_.GetKey();
     var totalClreaedNum = userData_.GetTotalClearedNum();
@@ -111,14 +128,19 @@ exports.UpdateTotalClearedNum = function(userData_){
     });
 }
 
-exports.DeleteClaredGame = function(userData_, pattern){
+exports.UpdateHaveHint = function(userData_, fillDailyHint){
     var userKey = userData_.GetKey();
-    console.log('delete pattern key: ' + userKey + ' pattern: ' + pattern);
+    var haveHint = userData_.GetHaveHint();
+    var query = { 
+            $set: { 'haveHint': haveHint },
+        };
+    if( fillDailyHint === true ){
+        query['$set']['lastFilledHintDate'] = new Date();
+        console.log('update hint key: ' + userKey + ' haveHint: ' + haveHint + ' fillDailyHint: ' + fillDailyHint);
+    }    
     UserDBData.update(
         { _id: userKey },
-        { 
-            $pull: { clearedData: { _id: pattern } },
-        },
+        query,
         function(err){
         if (err) console.log(err);
     });

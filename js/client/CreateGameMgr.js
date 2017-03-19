@@ -9,10 +9,11 @@ CreateGameMgr.prototype.canvasZoom = 60;
 CreateGameMgr.prototype.gameBoard;
 CreateGameMgr.prototype.boardOffset = {x: 0, y:0};
 CreateGameMgr.prototype.isClear = false;
-CreateGameMgr.prototype.hintBlockList = '';
+CreateGameMgr.prototype.hintList = [];
 CreateGameMgr.prototype.currBlockList = '';
 CreateGameMgr.prototype.hintSpriteList = [];
 CreateGameMgr.prototype.hintNum = -1;
+CreateGameMgr.prototype.hintText;
 
 CreateGameMgr.prototype.ObjectList = [];
 
@@ -73,6 +74,7 @@ CreateGameMgr.prototype.CloseGame = function(){
         this.ObjectList[i].kill();
     }
     this.ObjectList = [];
+	this.hintText = 0;
 
 	blockMgr.eraseBlocks();
 	if( typeof this.canvas !== 'undefined' )
@@ -88,15 +90,23 @@ CreateGameMgr.prototype.CreateBtn_Hint = function(){
 	button.scale.x = 3;
 	button.scale.y = 2;
 
-	var text = game.add.text(button.x + (button.width/2), button.y + (button.height/2), 'HINT\n999', 
+	var text = game.add.text(button.x + (button.width/2), button.y + (button.height/2), '', 
 		{ font: '48px Arial', fill: '#ffffff', align: 'center'});
 	text.anchor.set(0.5);
 	text.stroke = '#992255';
 	text.strokeThickness = 20;
 	text.setShadow(2, 2, '#333333', 2, true, true);
-
+	this.hintText = text;
+	this.UpdateHintText();
+	
 	this.ObjectList.push(button);
 	this.ObjectList.push(text);
+}
+
+CreateGameMgr.prototype.UpdateHintText = function(){
+	if( typeof this.hintText === 'undefined' || this.hintText === 0 )
+		return;
+	this.hintText.text = 'HINT\n' + clientData.GetHaveHint();
 }
 
 CreateGameMgr.prototype.onUpBack = function(){
@@ -250,32 +260,41 @@ CreateGameMgr.prototype.createGameBoard = function(spriteWidth, spriteHeight, of
 }
 
 CreateGameMgr.prototype.resetHint = function(hint){
-	this.hintBlockList = hint;
-	this.hintNum = -1;
+	this.hintList = hint;
+	this.hintNum = 0;
 	this.HideHint();
-	textMessage.updateHintText(0);
+}
+
+CreateGameMgr.prototype.AddHint = function(hintData){
+	if( hintData.length == 0 )
+		return;
+	
+	this.hintList.push(hintData);
+	clientData.DecreaseHaveHint();
+    this.ShowHint();
+	this.UpdateHintText();
 }
 
 CreateGameMgr.prototype.ShowHint = function(){
-	//console.log('show hint : ' + this.hintBlockList);
-	this.HideHint();
-	var hintIndex = (++this.hintNum) % this.currBlockList.length;
-	var hintBlockType = this.currBlockList[hintIndex];
-	var arrBlock = this.hintBlockList.split('_');
-	for(var y in arrBlock){
-		for(var x in arrBlock[y]){
-			if( arrBlock[y][x] !== hintBlockType )
-				continue;
-			
-			var offsetX = (blockMgr.SIZE_ONE_BLOCK * this.boardOffset.x) + (x * this.canvasZoom)+1;
-			var offsetY = (blockMgr.SIZE_ONE_BLOCK * this.boardOffset.y) + (y * this.canvasZoom)+1;
-			var hintBlock = game.add.sprite(offsetX, offsetY, 'hintBlock');
-			hintBlock.scale.set(3);
-			this.hintSpriteList.push(hintBlock);
-		}
+	if(this.hintNum >= this.hintList.length)
+	{
+		if( clientData.GetHaveHint() <= 0 )
+			return;
+		
+		clientSocket.SendGetHintReq(this.hintNum);
+		return;
 	}
-	textMessage.updateHintText(this.hintNum+1);
-	//setTimeout('createGameMgr.HideHint()', 3000);
+
+	this.HideHint();
+	for(var i in this.hintList[this.hintNum]){
+		var pos = this.hintList[this.hintNum][i];
+		var offsetX = (blockMgr.SIZE_ONE_BLOCK * this.boardOffset.x) + (pos.x * this.canvasZoom)+1;
+		var offsetY = (blockMgr.SIZE_ONE_BLOCK * this.boardOffset.y) + (pos.y * this.canvasZoom)+1;
+		var hintBlock = game.add.sprite(offsetX, offsetY, 'hintBlock');
+		hintBlock.scale.set(3);
+		this.hintSpriteList.push(hintBlock);
+	}
+	this.hintNum = (this.hintNum+1) % this.currBlockList.length;
 }
 
 CreateGameMgr.prototype.HideHint = function(){
