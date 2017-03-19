@@ -81,8 +81,6 @@ UserData.prototype.DailyFillHaveHint = function(haveHint, lastDate){
         this.lastFilledHintDate.setSeconds(0);
         this.lastFilledHintDate.setDate(this.lastFilledHintDate.getDate()+1);
         // check, is still today.
-        console.log(this.lastFilledHintDate);
-        console.log(new Date());
         if( this.lastFilledHintDate > new Date() )
             return;
     }

@@ -81,8 +81,11 @@ exports.GetRankingOrderIndex = function(data_){
 }
 
 exports.InsertNewUser = function(userData_){
+    if( !userData_.IsSaveAbleUser() )
+        return;
     if( this.GetUserRanking(userData_.GetKey()) > 0 )
         return;
+
     var data = {};
     data._id = userData_.GetKey();
     data.name = userData_.GetName();
@@ -93,9 +96,12 @@ exports.InsertNewUser = function(userData_){
 }
 
 exports.UpdateUserRecord = function(userData_){
+    if( !userData_.IsSaveAbleUser() )
+        return;
     var userID = userData_.GetKey();
     if( this.GetUserRanking(userID) === 0 )
     {
+        console.log('****');
         this.InsertNewUser(userData_);
         return;
     }
