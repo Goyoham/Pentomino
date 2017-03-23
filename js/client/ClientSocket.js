@@ -36,16 +36,16 @@ ClientSocket.prototype.CheckFullGameBoardArrayReq = function(gameBoard){
 socket.on('verify_cleared_game_ack', function(data){
     if( !data.isClear )
         return;
-    console.log(data);
-    createGameMgr.SetClearGame();
+    //console.log(data);
     clientData.SetClearedNumOfPattern(data.clearedData.sizeStr, data.clearedData.clearedNum);
+    createGameMgr.SetClearGame();
 });
 
 ClientSocket.prototype.ReverifyLogin_Facebook = function(data){
     socket.emit('reverify_login_from_facebook_req', data);
 }
 socket.on('reverify_login_from_facebook_ack', function(data){
-    console.log(data);
+    //console.log(data);
 });
 
 ClientSocket.prototype.SendLoginedUserInfoNot = function(data){

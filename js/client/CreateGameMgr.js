@@ -116,11 +116,13 @@ CreateGameMgr.prototype.onUpBack = function(){
 }
 
 CreateGameMgr.prototype.onUpHint = function() {
+	if( this.isClear )
+		return;
     this.ShowHint();
 }
 
 CreateGameMgr.prototype.createGame = function(ranPattern){
-	console.log('createGame: ' + ranPattern.width + 'x'+ ranPattern.height + ' ' + ranPattern.blockList);
+	//console.log('createGame: ' + ranPattern.width + 'x'+ ranPattern.height + ' ' + ranPattern.blockList);
 	var offsetX = this.getOffsetCenter(ranPattern.width, SCREEN_WIDTH);
 	var offsetY = this.getOffsetCenter(ranPattern.height, SCREEN_HEIGHT) - 240;
 	this.createGameBoard(ranPattern.width, ranPattern.height, offsetX, offsetY);
@@ -188,13 +190,44 @@ CreateGameMgr.prototype.CheckFullGameBoardArray = function(){
 				return false;
 		}
 	}
-	console.log('cleared by client ' + lenX + 'x' + lenY);
+	//console.log('cleared by client ' + lenX + 'x' + lenY);
 	return true;
 }
 
 CreateGameMgr.prototype.SetClearGame = function(){
-	console.log('cleared by server');
+	//console.log('cleared by server');
 	this.isClear = true;
+	this.ShowNextGameButton();
+}
+
+CreateGameMgr.prototype.ShowNextGameButton = function(){	
+	var button = game.add.button(game.world.centerX, game.world.centerY + 250, 'btn_play1', this.onUpNextGame, this, 0, 0, 1);
+	button.scale.x = 7;
+	button.scale.y = 1.5;
+	button.anchor.set(0.5);
+
+	var text = game.add.text(button.x, button.y, 'Next Game', 
+		{ font: '64px Arial', fill: '#ffffff', align: 'center'});
+	text.anchor.set(0.5);
+	text.stroke = '#c4c4ff';
+	text.strokeThickness = 25;
+	text.setShadow(2, 2, '#333333', 2, true, true);
+
+	var clearData = clientData.GetMyClearDataStr(mainPage.currGameType, true);
+    var text_info = game.add.text(game.world.centerX, game.world.centerY + 390, clearData, 
+        { font: '64px Arial', fill: '#ffffff', align: 'center'});
+    text_info.anchor.set(0.5);
+    text_info.stroke = '#d8b356';
+    text_info.strokeThickness = 40;
+    text_info.setShadow(2, 2, '#333333', 2, true, true);
+
+	this.ObjectList.push(button);
+	this.ObjectList.push(text);
+    this.ObjectList.push(text_info);
+}
+
+CreateGameMgr.prototype.onUpNextGame = function(){
+	_gameState.SetState(state.GamePage);
 }
 
 CreateGameMgr.prototype.setGameBoardArray = function(block){

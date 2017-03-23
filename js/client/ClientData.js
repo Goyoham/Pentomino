@@ -48,7 +48,7 @@ ClientData.prototype.DecreaseHaveHint = function(){
 }
 
 ClientData.prototype.GetNumOfPattern = function(size){
-    if( typeof(size) === 'undefined' || size === 0 ){
+    if( typeof size === 'undefined' || size === 0 ){
         return this.TotalNumOfPattern;
     }
 
@@ -100,5 +100,11 @@ ClientData.prototype.GetPercentStr = function(clearedNum, size){
     var totalNum = clientData.GetNumOfPattern(size);
     if( totalNum === 0 )
         return 'err/0';
-    return ' (' +(clearedNum / this.TotalNumOfPattern * 100).toFixed(2) + '%)';
+    var fixedStr = 0;
+    if( totalNum > 1000 ){
+        fixedStr = 2;
+    }else if( totalNum > 100 ){
+        fixedStr = 1;
+    }
+    return ' (' +(clearedNum / totalNum * 100).toFixed(fixedStr) + '%)';
 }
