@@ -155,6 +155,8 @@ exports.ReverifyLoginCallback_Facebook = function(result, socket){
 
 exports.SendLoginClearedPattern = function(userData_){
     var socket = this.GetSocket(userData_.socketID);
+    if( typeof socket === 'undefined' )
+        return;
     var data = {};
     data.clearedNumOfPattern = userData_.GetClearedNumOfPattern();
     console.log('SendLoginClearedPattern size:' + _utils.size(data.clearedNumOfPattern));
@@ -167,6 +169,8 @@ exports.SendLoginClearedPattern = function(userData_){
 
 exports.SendMyRanking = function(userData_){
     var socket = this.GetSocket(userData_.socketID);
+    if( typeof socket === 'undefined' )
+        return;
     var data = {};
     data.myRanking = _rankingManager.GetUserRanking(userData_.GetKey());
     if( userData_.myRanking === data.myRanking )
@@ -177,6 +181,8 @@ exports.SendMyRanking = function(userData_){
 
 exports.UpdateHaveHint = function(userData_){
     var socket = this.GetSocket(userData_.socketID);
+    if( typeof socket === 'undefined' )
+        return;
     var data = {};
     data.haveHint = userData_.GetHaveHint();
     socket.emit('update_have_hint_not', data);
