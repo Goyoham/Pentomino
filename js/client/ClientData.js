@@ -34,7 +34,7 @@ ClientData.prototype.SetMyRanking = function(myRanking_){
 
 ClientData.prototype.SetHaveHint = function(haveHint){
     this.haveHint = haveHint;
-    console.log('setHaveHint:'+this.haveHint);
+    //console.log('setHaveHint:'+this.haveHint);
 }
 
 ClientData.prototype.GetHaveHint = function(){
