@@ -43,6 +43,6 @@ GameState.prototype.SetState = function(state_){
             return;
     }
 
-    console.log('state '+state_+' -> '+this.myState);
+    //console.log('state '+state_+' -> '+this.myState);
     this.myState = state_;
 }

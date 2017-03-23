@@ -21,7 +21,7 @@ MainPage.prototype.currGameType = '';
 MainPage.prototype.ready = false;
 
 MainPage.prototype.ShowMainPage = function(){
-    console.log('show main page');
+    //console.log('show main page');
 
     this.ObjectList = [];
     for( var i in this.boardList){
@@ -88,7 +88,7 @@ MainPage.prototype.ShowMainPage = function(){
 }
 
 MainPage.prototype.CloseMainPage = function(){
-    console.log('CloseMainPage');
+    //console.log('CloseMainPage');
     this.RemoveLoginUserData();
     for(var i in this.ObjectList){
         this.ObjectList[i].kill();
@@ -98,7 +98,7 @@ MainPage.prototype.CloseMainPage = function(){
 
 MainPage.prototype.SetLoginUserData = function(){
     this.RemoveLoginUserData();
-    console.log('n:'+_login_Facebook.name);
+    //console.log('n:'+_login_Facebook.name);
     var clearData = clientData.GetMyClearDataStr(0, true);
     var text = game.add.text(55, this.PADDING_Y - 80, 'Welcome! '+_login_Facebook.name+'!', 
         { font: '36px Arial', fill: '#ffffff', align: 'center'});
@@ -117,7 +117,7 @@ MainPage.prototype.RemoveLoginUserData = function(){
 }
 
 MainPage.prototype.onUpBoard = function(button){
-    console.log('on button ' + button.variable);
+    //console.log('on button ' + button.variable);
     this.currGameType = button.variable;
     // this.CloseMainPage();
     // choicePage.ShowChoicePage();
@@ -126,16 +126,16 @@ MainPage.prototype.onUpBoard = function(button){
 
 MainPage.prototype.onLogin_fb = function(){
     FB.api('/me', function(response) {
-        console.log(JSON.stringify(response));
+        //console.log(JSON.stringify(response));
     });
     if( _login_Facebook.isLogin ){
-        console.log('on click logout');
+        //console.log('on click logout');
         FB.logout(function(response){
             _login_Facebook.statusChangeCallback(response);
         });
     }
     else{
-        console.log('on click login');
+        //console.log('on click login');
         FB.login(function(response){
             _login_Facebook.statusChangeCallback(response);
         });

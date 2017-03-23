@@ -127,7 +127,7 @@ BlockMgr.prototype._makeRotatedForm = function(blockForm){
 BlockMgr.prototype._getBlockType = function(key){
     if( typeof key === 'undefined')
     {
-        console.log('undefined key');
+        //console.log('undefined key');
         return;
     }
     var strArr = key.split('_');

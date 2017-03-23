@@ -61,18 +61,18 @@ VerifyGame.prototype.verify = function(){
 		height = 5;
 		//test
 		this.resultNum = 1;
-		console.log('board ' + num++ + ' size : ' + width + 'x' + height);
+		//console.log('board ' + num++ + ' size : ' + width + 'x' + height);
 		var old_time = new Date();
 		this.verifyBoard(width, height);
 		var new_time = new Date();
 		var seconds_passed = (new_time - old_time) / 1000;
-		console.log('elapsedTime : ' + seconds_passed);
+		//console.log('elapsedTime : ' + seconds_passed);
 		break;//test
 	}
 
-	console.log(this.verifiedBoards);
+	//console.log(this.verifiedBoards);
 	this.writeVerifiedBoards();
-	console.log('done');
+	//console.log('done');
 }
 
 VerifyGame.prototype.verifyBoard = function(width, height){
@@ -246,25 +246,25 @@ VerifyGame.prototype.isCompletedBoard = function(board){
 
 VerifyGame.prototype.printBoard = function(board, msg){
 	if( typeof msg !== 'undefined' )
-		console.log(msg);
+		//console.log(msg);
 	for(var y in board){
 		var line = '';
 		for(var x in board[y]){
 			line += (board[y][x]+' ');
 		}
-		console.log(line);
+		//console.log(line);
 	}
 }
 
 VerifyGame.prototype.writeVerifiedBoards = function(){
 	for(var sizeTypeStr in this.verifiedBoards){
-		console.log('>>'+sizeTypeStr);
+		//console.log('>>'+sizeTypeStr);
 		for(var blocksStr in this.verifiedBoards[sizeTypeStr]){
-			console.log('>'+blocksStr);
+			//console.log('>'+blocksStr);
 			for(var index in this.verifiedBoards[sizeTypeStr][blocksStr])
 			{
 				var board = this.verifiedBoards[sizeTypeStr][blocksStr][index];
-				console.log(this.serializeBoardSingle(board));
+				//console.log(this.serializeBoardSingle(board));
 			}			
 		}
 	}
@@ -297,7 +297,7 @@ VerifyGame.prototype.insertCompletedBoard = function(boardState){
 	this.verifiedBoards[sizeTypeStr][blockList].push(board);
 	//log
 	//this.printBoard(board, '<Result ' + this.resultNum++ + '> ' + boardState.blockList);
-	console.log('<Result ' + this.resultNum++ + '> ' + boardState.blockList);
+	//console.log('<Result ' + this.resultNum++ + '> ' + boardState.blockList);
 }
 
 VerifyGame.prototype.getBoardSizeStr = function(board){

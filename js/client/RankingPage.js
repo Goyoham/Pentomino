@@ -40,7 +40,7 @@ RankingPage.prototype.ShowRankingList = function(data){
     if( _gameState.GetState() !== state.RankingPage )
         return;
     
-    console.log(data.rankingList);
+    //console.log(data.rankingList);
     var yPadding = 300;
     var yTerm = 100;
     for( var index in data.rankingList )

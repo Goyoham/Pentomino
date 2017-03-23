@@ -8,7 +8,7 @@ var choicePage = new ChoicePage();
 ChoicePage.prototype.btnName = ['btn_play1', 'btn_play1'];
 ChoicePage.prototype.playList = [
     'Play Official Game', 
-    'Play Hard Mode'
+    //'Play Hard Mode'
     ];
 ChoicePage.prototype.style = { font: '64px Arial', fill: '#ffffff', align: 'center'};
 ChoicePage.prototype.ObjectList = [];
@@ -58,10 +58,7 @@ ChoicePage.prototype.CloseChoicePage = function(){
 ChoicePage.prototype.onUpButton = function(button){
     switch( button.variable )
     {
-        case 0:            
-            // play official game
-            // this.CloseChoicePage();
-            // createGameMgr.ShowGamePage();
+        case 0:
             _gameState.SetState(state.GamePage);
         break;
 
