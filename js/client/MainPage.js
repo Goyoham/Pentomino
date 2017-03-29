@@ -69,8 +69,8 @@ MainPage.prototype.ShowMainPage = function(){
     // login / logout
     {
         if( _loginManager.GetLoginType() != LOGIN_TYPE.None ){
-            var button = game.add.button(0, this.PADDING_Y-90, _loginManager.GetLogoutButtonName(), this.onLogOut, this, 0, 0, 1);
-            button.scale.set(2);
+            var button = game.add.button(0, this.PADDING_Y-75, _loginManager.GetLogoutButtonName(), this.onLogOut, this, 0, 0, 1);
+            button.scale.set(1.5);
             button.x = SCREEN_WIDTH - button.width - 10;
             this.ObjectList.push(button);
         }
