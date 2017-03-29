@@ -21,6 +21,9 @@ GameState.prototype.GetState = function(){
 GameState.prototype.SetState = function(state_){
     if( state_ < state.Begin || state_ >= state.Max )
         return;
+
+    if( isReadyToCreateGame === false )
+        return;
     
     // close page
     switch( this.GetState() ){

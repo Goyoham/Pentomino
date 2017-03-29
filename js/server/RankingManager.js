@@ -64,6 +64,7 @@ exports.GetRankingListByPage = function(page_){
         clientData.name = data.name;
         clientData.ranking = data.ranking;
         clientData.TotalClearedNum = data.TotalClearedNum;
+        clientData.loginType = data.loginType;
         rankingList.push(clientData);
     }
     return rankingList;
@@ -90,6 +91,7 @@ exports.InsertNewUser = function(userData_){
     data._id = userData_.GetKey();
     data.name = userData_.GetName();
     data.TotalClearedNum = userData_.GetTotalClearedNum();
+    data.loginType = userData_.GetLoginType();
     this.rankingOrderList.push(data);
     data.ranking = this.rankingOrderList.length;
     this.rankingUserList[data._id] = data;

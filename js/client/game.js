@@ -5,6 +5,8 @@ var game = new Phaser.Game(SCREEN_WIDTH, SCREEN_HEIGHT
     , Phaser.AUTO, 'Pentomino'
     , { preload: preload, create: create, update: update, render: render });
 
+var isReadyToCreateGame = false;
+
 //----------------- preload -----------------------------------------------------------------
 function preload() {
     // fix the scale full on my screen
@@ -29,15 +31,23 @@ function preload() {
     game.load.spritesheet('btn_ranking', 'assets/btn_ranking.png', 90, 60);
 
     // facebook
-    game.load.spritesheet('btn_login_fb', 'assets/btn_login_fb.png', 123, 39);
+    game.load.spritesheet('btn_login_fb', 'assets/btn_login_fb_s.png', 39, 39);
     game.load.spritesheet('btn_logout_fb', 'assets/btn_logout_fb.png', 143, 39);
+
+    // google
+    game.load.spritesheet('btn_login_gl', 'assets/btn_login_gl_s.png', 138, 138);
+    game.load.spritesheet('btn_logout_gl', 'assets/btn_logout_gl.png', 137, 39);
 
     // fonts
     game.load.bitmapFont('font_desyrel', 'assets/fonts/desyrel.png', 'assets/fonts/desyrel.xml');
+
+    isPreloaded = true;
 }
 
 //----------------- create -----------------------------------------------------------------
 function create() {
+    isReadyToCreateGame = true;
+    startGoogleLogin();
     // Disable right-click
     document.body.oncontextmenu = function () { return false; };
     // align center

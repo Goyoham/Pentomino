@@ -6,14 +6,13 @@ var socket = io();
 socket.on('connected', function(data){
     //console.log('connected to server');
     clientData.InitData(data);
-    checkLoginState();
+    _loginManager.ReconnectedServer();
 });
 
 socket.on('login_cleared_pattern_not', function(data){
     //console.log('got login data');
     clientData.InitClearedData(data);
     if( mainPage.ready ){
-        // mainPage.ShowMainPage();
         _gameState.SetState(state.MainPage);
     }
 });
@@ -45,18 +44,33 @@ ClientSocket.prototype.ReverifyLogin_Facebook = function(data){
     socket.emit('reverify_login_from_facebook_req', data);
 }
 socket.on('reverify_login_from_facebook_ack', function(data){
-    //console.log(data);
+    if( data.ok === 1 ){
+        _login_Facebook.AfterLoginProcess();
+    }
 });
 
-ClientSocket.prototype.SendLoginedUserInfoNot = function(data){
+ClientSocket.prototype.ReverifyLogin_Google = function(data){
+    socket.emit('reverify_login_from_google_req', data);
+}
+socket.on('reverify_login_from_google_ack', function(data){
+    if( data.ok === 1 ){
+         _login_Google.AfterLoginProcess();
+    }
+});
+
+ClientSocket.prototype.SendLoginedUserInfoNot = function(name){
+    var data = {};
+    data.name = name;
     socket.emit('logined_user_info_not', data);
 }
 
-ClientSocket.prototype.LoginOut_Facebook = function(){
-    socket.emit('loginout_from_facebook_req', {});
+ClientSocket.prototype.Send_Logout = function(){
+    socket.emit('user_logout_req', {});
 }
-socket.on('loginout_from_facebook_ack', function(data){
-    //console.log(data);
+socket.on('user_logout_ack', function(data){
+    _loginManager.SetLoginType(LOGIN_TYPE.None);
+    _loginManager.SetUserName('');
+    _gameState.SetState(state.MainPage);
 });
 
 socket.on('my_ranking_not', function(data){

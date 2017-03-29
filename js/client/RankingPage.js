@@ -13,16 +13,6 @@ RankingPage.prototype.ShowRankingPage = function(){
         btn_back.x = SCREEN_WIDTH - btn_back.width;
         this.ObjectList.push(btn_back);
     }
-
-    // {
-    //     var text = game.add.text(game.world.centerX, game.world.centerY/3*2, 'loading...',
-    //     { font: '72px Arial', fill: '#ffffff', align: 'center'});
-    //     text.stroke = '#6AD8C4';
-    //     text.strokeThickness = 30;
-    //     text.anchor.set(0.5);
-    //     text.setShadow(2, 2, '#333333', 2, true, true);
-    //     this.ObjectList.push(text);
-    // }
 }
 
 RankingPage.prototype.CloseRankingPage = function(){
@@ -47,7 +37,11 @@ RankingPage.prototype.ShowRankingList = function(data){
     {
         var rankingData = data.rankingList[index];
         var text = game.add.text(50, yPadding, 
-        rankingData.ranking + '    ' + rankingData.name + ' / ' + rankingData.TotalClearedNum + clientData.GetPercentStr(rankingData.TotalClearedNum),
+            rankingData.ranking + '    ' 
+            + this.GetLoginTypeStr(rankingData.loginType) + ' '
+            + rankingData.name + ' / ' 
+            + rankingData.TotalClearedNum 
+            + clientData.GetPercentStr(rankingData.TotalClearedNum),
         { font: '50px Arial', fill: '#ffffff', align: 'center'});
         text.stroke = '#000000';
         text.strokeThickness = 10;
@@ -55,4 +49,14 @@ RankingPage.prototype.ShowRankingList = function(data){
         this.ObjectList.push(text);
         yPadding += yTerm;
     }
+}
+
+RankingPage.prototype.GetLoginTypeStr = function(loginType){
+    var str = '';
+    switch(loginType){
+        case LOGIN_TYPE.Facebook: str = 'F'; break;
+        case LOGIN_TYPE.Google: str = 'G'; break;
+        default: return '';
+    }
+    return '('+str+')';
 }

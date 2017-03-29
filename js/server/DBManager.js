@@ -36,6 +36,7 @@ exports.FindUserRankingData = function(){
         {
             name: true, 
             TotalClearedNum: true,
+            loginType: true,
         },
         function(err, data){
         if(err) return console.error(err);

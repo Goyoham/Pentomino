@@ -8,7 +8,7 @@ window.fbAsyncInit = function() {
     });
     FB.AppEvents.logPageView();
     //console.log('fb');
-    checkLoginState();
+    //checkLoginState();
 };
 
 (function(d, s, id){
@@ -22,7 +22,7 @@ window.fbAsyncInit = function() {
 function Login_Facebook() {}
 var _login_Facebook = new Login_Facebook();
 
-function checkLoginState() {
+Login_Facebook.prototype.checkLoginState = function() {
     if( typeof FB === 'undefined' ){
         //console.log('FB is undefined');
         return;
@@ -33,25 +33,19 @@ function checkLoginState() {
     });
 }
 
-Login_Facebook.prototype.isLogin = false;
 Login_Facebook.prototype.name = '';
 Login_Facebook.prototype.statusChangeCallback = function(response){
     if( response.status === 'connected' ){
-        //console.log('logined from facebook');
-        //console.log(response);
-        FB.api('/me', function(response2) {
-            _login_Facebook.name = response2.name;
-            //console.log('name:'+name);
-            mainPage.SetLoginUserData();
-            clientSocket.SendLoginedUserInfoNot(response2);
-        });
         clientSocket.ReverifyLogin_Facebook(response);
-        this.isLogin = true;
     }
     else {
-        clientSocket.LoginOut_Facebook();
-        this.isLogin = false;
-        _login_Facebook.name = '';
-        mainPage.RemoveLoginUserData();
+        clientSocket.Send_Logout();
     }
+}
+
+Login_Facebook.prototype.AfterLoginProcess = function(){    
+    _loginManager.SetLoginType(LOGIN_TYPE.Facebook);
+    FB.api('/me', function(response2) {
+        _loginManager.SetUserName(response2.name);
+    });
 }

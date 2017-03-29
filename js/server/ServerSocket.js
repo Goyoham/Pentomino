@@ -1,3 +1,4 @@
+var GoogleAuth = require('google-auth-library');
 
 exports.CreateUserSession = function(socket){
     //var session = new ServerSocket();
@@ -58,6 +59,8 @@ exports.SendInit = function(socket){
 exports.OnPacket = function(socket){    
     socket.on('reverify_login_from_facebook_req', function(data){
         var userData = _serverSocket.GetUserData(socket.id);
+        if( typeof userData === 'undefined')
+            return;
         userData.SetVerifyingID(data.authResponse.userID);
         console.log('login req vid: ' + userData.GetVerifyingID());
         console.log('name:'+data.name);
@@ -74,20 +77,44 @@ exports.OnPacket = function(socket){
         _webRequest.getJSON(options, _serverSocket.ReverifyLoginCallback_Facebook, socket);
     });
 
-    socket.on('logined_user_info_not', function(data){
-        console.log('*loginedName: '+data.name);
-        var userData = _serverSocket.GetUserData(socket.id);
-        userData.SetUserInfo(data);
-	});
-
-    socket.on('loginout_from_facebook_req', function(data){
+    socket.on('reverify_login_from_google_req', function(data){
         var userData = _serverSocket.GetUserData(socket.id);
         if( typeof userData === 'undefined')
             return;
-        console.log('on packet logout');
+        userData.SetVerifyingID(data.id);
+        var CLIENT_ID = '28649472276-9vuhrqgns7ud6gv156mmudaa9n21nnu1.apps.googleusercontent.com';
+        var auth = new GoogleAuth;
+        var client = new auth.OAuth2(CLIENT_ID, '', '');
+        //console.log('*********code:'+data.id_token);
+        client.verifyIdToken(
+            data.id_token,
+            CLIENT_ID,
+            function(e, login) {
+                if( typeof login === 'undefined')
+                    return;
+                var payload = login.getPayload();
+                var userid = payload['sub']; 
+                _serverSocket.ReverifyLoginCallback_Google(userData, socket, userid);
+            }
+        );
+    });
+
+    socket.on('logined_user_info_not', function(data){
+        //console.log('*loginedName: '+data.name);
+        var userData = _serverSocket.GetUserData(socket.id);
+        if( typeof userData === 'undefined')
+            return;
+        userData.SetUserInfo(data);
+	});
+
+    socket.on('user_logout_req', function(data){
+        var userData = _serverSocket.GetUserData(socket.id);
+        if( typeof userData === 'undefined')
+            return;
+        //console.log('on packet logout');
 		var ack = {};
         userData.Logout();
-        socket.emit('loginout_from_facebook_ack', ack);
+        socket.emit('user_logout_ack', ack);
 	});
 
     socket.on('get_game_pattern_req', function(data){
@@ -106,7 +133,7 @@ exports.OnPacket = function(socket){
         var ack = {};
         ack.isClear = true;
         if( ack.isClear ){
-            console.log('clear user key: ' + userData.GetKey());
+            //console.log('clear user key: ' + userData.GetKey());
             ack.clearedData = userData.ClearPlayingPattern();
         }
         socket.emit('verify_cleared_game_ack', ack);
@@ -135,22 +162,32 @@ exports.OnPacket = function(socket){
 
 exports.ReverifyLoginCallback_Facebook = function(result, socket){
     var ack = {};
-    console.log(result);
     var id = result.data.user_id;
     var userData = _serverSocket.GetUserData(socket.id);
     if( typeof userData === 'undefined')
             return;
     ack.ok = userData.GetVerifyingID() === id ? 1 : 0
-    ack.result = result; // should delete
     socket.emit('reverify_login_from_facebook_ack', ack);
     if( ack.ok === 1 ){ // 4. 로그인 하면, 유저 데이터 생성 후 db에서 로드.
-        console.log('succeed to reverify login from facebook : ' + userData.GetVerifyingID() + ' ' + id);
-        userData.SetID(id, LOGIN_TYPE.Facebook); // 로그인한 ID로 갱신
-        userData.LoadGameDataFromDB();
+        _serverSocket.DoLoginedProcess(userData, id, LOGIN_TYPE.Facebook);
     }
-    else{
-        console.log('failed to reverify login from facebook : ' + userData.GetVerifyingID() + ' ' + id);
+}
+
+exports.ReverifyLoginCallback_Google = function(userData, socket, id){
+    var ack = {};
+    ack.ok = userData.GetVerifyingID() === id ? 1 : 0
+    socket.emit('reverify_login_from_google_ack', ack);
+    if( ack.ok === 1 ){ 
+        _serverSocket.DoLoginedProcess(userData, id, LOGIN_TYPE.Google);
     }
+}
+
+exports.DoLoginedProcess = function(userData, id, loginType){
+    // 4. 로그인 하면, 유저 데이터 생성 후 db에서 로드.
+    userData.SetID(id, loginType); // 로그인한 ID로 갱신
+    userData.LoadGameDataFromDB();
+
+    console.log('logined : ' + userData.GetKey());
 }
 
 exports.SendLoginClearedPattern = function(userData_){

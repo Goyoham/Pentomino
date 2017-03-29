@@ -21,8 +21,6 @@ MainPage.prototype.currGameType = '';
 MainPage.prototype.ready = false;
 
 MainPage.prototype.ShowMainPage = function(){
-    //console.log('show main page');
-
     this.ObjectList = [];
     for( var i in this.boardList){
         var x = (i % this.CALUMN_CNT) * this.BUTTON_GAP;
@@ -70,11 +68,23 @@ MainPage.prototype.ShowMainPage = function(){
 
     // login / logout
     {
-        var btnName = _login_Facebook.isLogin ? 'btn_logout_fb' : 'btn_login_fb';
-        var button = game.add.button(0, this.PADDING_Y-90, btnName, this.onLogin_fb, this, 0, 0, 1);
-        button.scale.set(2);
-        button.x = SCREEN_WIDTH - button.width - 10;
-        this.ObjectList.push(button);
+        if( _loginManager.GetLoginType() != LOGIN_TYPE.None ){
+            var button = game.add.button(0, this.PADDING_Y-90, _loginManager.GetLogoutButtonName(), this.onLogOut, this, 0, 0, 1);
+            button.scale.set(2);
+            button.x = SCREEN_WIDTH - button.width - 10;
+            this.ObjectList.push(button);
+        }
+        else{
+            var button_fb = game.add.button(0, this.PADDING_Y-90, 'btn_login_fb', this.onLogin_fb, this, 0, 0, 1);
+            button_fb.scale.set(2);
+            button_fb.x = SCREEN_WIDTH - button_fb.width - 10;
+            this.ObjectList.push(button_fb);
+
+            var button_gl = game.add.button(0, this.PADDING_Y-90, 'btn_login_gl', this.onLogin_gl, this, 0, 0, 1);
+            button_gl.scale.set(0.57);
+            button_gl.x = SCREEN_WIDTH - button_gl.width - 10 - button_fb.width - 10;
+            this.ObjectList.push(button_gl);
+        }
     }
 
     { // btn_rankPage
@@ -98,9 +108,8 @@ MainPage.prototype.CloseMainPage = function(){
 
 MainPage.prototype.SetLoginUserData = function(){
     this.RemoveLoginUserData();
-    //console.log('n:'+_login_Facebook.name);
     var clearData = clientData.GetMyClearDataStr(0, true);
-    var text = game.add.text(55, this.PADDING_Y - 80, 'Welcome! '+_login_Facebook.name+'!', 
+    var text = game.add.text(55, this.PADDING_Y - 80, 'Welcome! '+_loginManager.GetUserName()+'!',
         { font: '36px Arial', fill: '#ffffff', align: 'center'});
     //text.x = SCREEN_WIDTH/2 - text.width/2 - 190;
     text.stroke = '#728AFF';
@@ -124,22 +133,33 @@ MainPage.prototype.onUpBoard = function(button){
     _gameState.SetState(state.ChoicePage);
 }
 
+MainPage.prototype.onLogOut = function(){
+    switch( _loginManager.GetLoginType() ){
+        case LOGIN_TYPE.Facebook:
+            FB.logout(function(response){
+                _login_Facebook.statusChangeCallback(response);
+            });
+        break;
+
+        case LOGIN_TYPE.Google:
+            _login_Google.signOut();
+        break;
+    }
+}
+
 MainPage.prototype.onLogin_fb = function(){
-    FB.api('/me', function(response) {
-        //console.log(JSON.stringify(response));
-    });
-    if( _login_Facebook.isLogin ){
-        //console.log('on click logout');
-        FB.logout(function(response){
-            _login_Facebook.statusChangeCallback(response);
-        });
-    }
-    else{
-        //console.log('on click login');
-        FB.login(function(response){
-            _login_Facebook.statusChangeCallback(response);
-        });
-    }
+    if( _loginManager.GetLoginType() !== LOGIN_TYPE.None )
+        return;
+    
+    FB.login(function(response){
+        _login_Facebook.statusChangeCallback(response);
+    });    
+}
+
+MainPage.prototype.onLogin_gl = function(){
+    if( _loginManager.GetLoginType() !== LOGIN_TYPE.None )
+        return;
+    _login_Google.signIn();
 }
 
 MainPage.prototype.onUpRankingPage = function(){
