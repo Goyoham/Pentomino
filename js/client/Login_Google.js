@@ -20,10 +20,12 @@ Login_Google.prototype.saveName = '';
 Login_Google.prototype.signinChangedListener = function(isSignIn){
     //console.log('signinChangedListener:'+isSignIn);
     if( isSignIn === true ){
-        if( this.onClickedLogin !== true )
+        //console.log('this.onClickedLogin:' + _login_Google.onClickedLogin);
+        if( _login_Google.onClickedLogin !== true )
             return;
-        this.VerifyToLoginProcess();
-        this.onClickedLogin = false;
+        //console.log('call2 VerifyToLoginProcess');
+        _login_Google.VerifyToLoginProcess();
+        _login_Google.onClickedLogin = false;
     }
     else{
         clientSocket.Send_Logout();
@@ -38,10 +40,14 @@ Login_Google.prototype.signIn = function(){
         return;
     }
     _login_Google.auth2.signIn();
-    if( _login_Google.auth2.isSignedIn.get() === true )
+    if( _login_Google.auth2.isSignedIn.get() === true ){
         _login_Google.VerifyToLoginProcess();
-    else
+        //console.log('call VerifyToLoginProcess');
+    }
+    else{
         this.onClickedLogin = true;
+        //console.log('onClickedLogin = true');
+    }
 }
 
 Login_Google.prototype.signOut = function(){
@@ -56,13 +62,15 @@ Login_Google.prototype.VerifyToLoginProcess = function(){
     var googleUser = _login_Google.auth2.currentUser.get();
     if( typeof googleUser === 'undefined ')
         return;
+    //console.log('send verify2');
     var profile = googleUser.getBasicProfile();
     if( typeof profile === 'undefined ')
         return;
+    //console.log('send verify3');
     var data = {};
     data.id_token = googleUser.getAuthResponse().id_token;
     data.id = profile.getId();
-    //console.log('send verify2');
+    //console.log('send verify4');
     clientSocket.ReverifyLogin_Google(data);
 
     this.saveName = profile.getName();
