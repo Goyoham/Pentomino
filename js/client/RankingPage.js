@@ -37,7 +37,7 @@ RankingPage.prototype.ShowRankingList = function(data){
     {
         var rankingData = data.rankingList[index];
         var text = game.add.text(50, yPadding, 
-            rankingData.ranking + '    ' 
+            rankingData.ranking + '  ' 
             + this.GetLoginTypeStr(rankingData.loginType) + ' '
             + rankingData.name + ' / ' 
             + rankingData.TotalClearedNum 
