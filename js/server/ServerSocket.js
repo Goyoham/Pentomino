@@ -2,10 +2,12 @@ var GoogleAuth = require('google-auth-library');
 
 exports.CreateUserSession = function(socket){
     var userData = _userData.GetUserDataInstance(LOGIN_TYPE.None, 0, socket.id);
-    this.InsertSocket(socket, userData);
+    this.InsertSocket(socket, userData);    
+    this.AddConnectingUserCount(1);
 }
 
 exports.SocketList = {};
+exports.ConnectingUserCnt = 0;
 exports.InsertSocket = function(socket, userData){
     console.log('InsertSocket id: ' + socket.id);
     this.SocketList[socket.id] = {};
@@ -18,6 +20,7 @@ exports.EraseSocket = function(socketID){
         return;
     }
     delete this.SocketList[socketID];
+    this.AddConnectingUserCount(-1);
     // test
     if( this.SocketList.hasOwnProperty(socketID) ){
         console.log('failed to delete socket id:' + socketID);
@@ -43,6 +46,11 @@ exports.GetUserData = function(socketID){
         return;
     }
     return this.SocketList[socketID].userData;
+}
+
+exports.AddConnectingUserCount = function(add){
+    this.ConnectingUserCnt += add;
+    console.log('-- CONNECTING USER COUNT : ' + this.ConnectingUserCnt);
 }
 
 exports.SendInit = function(socket){
