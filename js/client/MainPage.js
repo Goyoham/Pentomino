@@ -109,7 +109,14 @@ MainPage.prototype.CloseMainPage = function(){
 MainPage.prototype.SetLoginUserData = function(){
     this.RemoveLoginUserData();
     var clearData = clientData.GetMyClearDataStr(0, true);
-    var text = game.add.text(55, this.PADDING_Y - 80, 'Welcome! '+_loginManager.GetUserName()+'!',
+    var name = _loginManager.GetUserName();
+    if( name === '' ){
+        name = '  You should \'SIGN IN\' to Save!   >>>>>';
+    }
+    else{
+        name += '!';
+    }
+    var text = game.add.text(55, this.PADDING_Y - 80, 'Welcome! '+name,
         { font: '36px Arial', fill: '#ffffff', align: 'center'});
     //text.x = SCREEN_WIDTH/2 - text.width/2 - 190;
     text.stroke = '#728AFF';
