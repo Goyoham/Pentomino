@@ -1,4 +1,12 @@
+
+require('date-utils'); // npm install date-utils
 var GoogleAuth = require('google-auth-library');
+
+exports.GetDate = function(){
+	var date = new Date();
+	var ms = date.getMilliseconds();
+	return date.toFormat('YY/MM/DD HH24:MI:SS.'+ms);
+}
 
 exports.CreateUserSession = function(socket){
     var userData = _userData.GetUserDataInstance(LOGIN_TYPE.None, 0, socket.id);
@@ -50,7 +58,7 @@ exports.GetUserData = function(socketID){
 
 exports.AddConnectingUserCount = function(add){
     this.ConnectingUserCnt += add;
-    console.log('-- CONNECTING USER COUNT : ' + this.ConnectingUserCnt);
+    console.log('['+this.GetDate()+'] CONNECTING USER COUNT : ' + this.ConnectingUserCnt);
 }
 
 exports.SendInit = function(socket){
