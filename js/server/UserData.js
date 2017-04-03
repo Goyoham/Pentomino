@@ -8,6 +8,7 @@ exports.GenerateUnknownUserID = function(){
 exports.GetUserDataInstance = function(loginType, id_, socketID){
     var userData = new UserData();
     userData.socketID = socketID;
+    userData.clearedPatterns = {};
 
     if( loginType === LOGIN_TYPE.None )
         id_ = this.GenerateUnknownUserID();

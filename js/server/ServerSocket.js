@@ -1,10 +1,6 @@
 var GoogleAuth = require('google-auth-library');
 
 exports.CreateUserSession = function(socket){
-    //var session = new ServerSocket();
-    //session.socket = socket;
-    //session.SetUserData(LOGIN_TYPE.None, 0, session);
-    //return session;
     var userData = _userData.GetUserDataInstance(LOGIN_TYPE.None, 0, socket.id);
     this.InsertSocket(socket, userData);
 }
